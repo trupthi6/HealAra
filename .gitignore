@@ -1,0 +1,17 @@
+# Dependency directories
+node_modules/
+client/node_modules/
+
+# Local configuration/secrets
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+client/dist/
+
+# IDE/System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

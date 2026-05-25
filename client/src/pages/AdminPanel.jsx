@@ -1156,7 +1156,7 @@ export default function AdminPanel() {
                       required
                       value={uEmail}
                       onChange={(e) => setUEmail(e.target.value)}
-                      placeholder="rahul@antigravity.com"
+                      placeholder="rahul@healara.com"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-teal-500"
                     />
                     {fieldErrors.email && (

@@ -53,7 +53,7 @@ export default function Sidebar() {
         {/* Logo Section */}
         <div className="p-6 border-b border-gray-100 flex items-center gap-2">
           <Activity className="h-6 w-6 text-teal-600" />
-          <span className="font-bold text-xl tracking-tight text-teal-600">Antigravity</span>
+          <span className="font-bold text-xl tracking-tight text-teal-600">HealAra</span>
         </div>
 
         {/* Navigation Links */}

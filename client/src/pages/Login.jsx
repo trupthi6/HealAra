@@ -42,7 +42,7 @@ export default function Login() {
           <Activity className="h-6 w-6" />
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 tracking-tight">
-          Welcome to Antigravity
+          Welcome to HealAra
         </h2>
         <p className="mt-2 text-center text-sm text-gray-500 font-medium">
           Secure portal for patients & healthcare providers
@@ -69,7 +69,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-shadow"
-                  placeholder="name@antigravity.com"
+                  placeholder="name@healara.com"
                 />
               </div>
             </div>

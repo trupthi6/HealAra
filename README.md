@@ -1,6 +1,6 @@
-# Antigravity — Community Health Intelligence Platform
+# HealAra — Community Health Intelligence Platform
 
-Antigravity is a data-driven health intelligence platform designed to help patients with chronic conditions (diabetes, hypertension, asthma) log their daily vitals, track historical trends with interactive charts, receive automated warnings for clinical anomalies, get AI-powered health advice, and securely share health logs with their doctors.
+HealAra is a data-driven health intelligence platform designed to help patients with chronic conditions (diabetes, hypertension, asthma) log their daily vitals, track historical trends with interactive charts, receive automated warnings for clinical anomalies, get AI-powered health advice, and securely share health logs with their doctors.
 
 ---
 
@@ -43,7 +43,7 @@ vitaltrack/
 
 ## 🚀 Setup & Installation Instructions
 
-Follow these steps to run Antigravity locally:
+Follow these steps to run HealAra locally:
 
 ### 1. Prerequisites
 Ensure you have **Node.js (v18 or higher)** and a running **MongoDB server** (local or Atlas cloud cluster) active.
@@ -90,12 +90,12 @@ Use these seed accounts to explore all features:
 
 ### 👨‍💼 Admin
 Full platform management — user CRUD, audit logs, and system analytics.
-- **Email:** `admin@antigravity.com`
+- **Email:** `admin@healara.com`
 - **Password:** `Admin@123`
 
 ### 🧑‍⚕️ Healthcare Provider (Doctor Role)
 Access the Doctor Portal workspace — select shared patients, review log timelines, view patient trends & graphs, and download PDF summaries.
-- **Email:** `doctor@antigravity.com`
+- **Email:** `doctor@healara.com`
 - **Password:** `Doctor@123`
 
 ### 🤒 Patients (Patient Role)
@@ -103,14 +103,14 @@ Log vitals, check trends with interactive charts, manage medications, view alert
 
 #### Patient 1 (Diabetes Condition)
 - **Name:** Rahul Verma
-- **Email:** `patient1@antigravity.com`
+- **Email:** `patient1@healara.com`
 - **Password:** `Patient@123`
 - **Condition:** Diabetes (Glucose thresholds set to max 180 mg/dL)
 - **State:** Has 3 active glucose alerts triggered by high readings.
 
 #### Patient 2 (Hypertension Condition)
 - **Name:** Aisha Patel
-- **Email:** `patient2@antigravity.com`
+- **Email:** `patient2@healara.com`
 - **Password:** `Patient@123`
 - **Condition:** Hypertension (Systolic BP thresholds set to max 135 mmHg)
 - **State:** Has 3 active BP alerts.

@@ -34,7 +34,7 @@ async function seedDB() {
     const adminPasswordHash = await bcrypt.hash("Admin@123", 10);
     const admin = new User({
       name: "Admin",
-      email: "admin@antigravity.com",
+      email: "admin@healara.com",
       password: adminPasswordHash,
       role: "admin"
     });
@@ -49,7 +49,7 @@ async function seedDB() {
     const doctorPasswordHash = await bcrypt.hash("Doctor@123", 10);
     const doctor = new User({
       name: "Dr. Priya Sharma",
-      email: "doctor@antigravity.com",
+      email: "doctor@healara.com",
       password: doctorPasswordHash,
       role: "doctor",
       dob: new Date("1978-05-15")
@@ -134,7 +134,7 @@ SCHEDULED
 
     const patient1 = new User({
       name: "Rahul Verma",
-      email: "patient1@antigravity.com",
+      email: "patient1@healara.com",
       password: patientPasswordHash,
       role: "patient",
       dob: new Date("1985-04-12"),
@@ -227,7 +227,7 @@ NO IMMEDIATE ACTION NEEDED
 
     const patient2 = new User({
       name: "Aisha Patel",
-      email: "patient2@antigravity.com",
+      email: "patient2@healara.com",
       password: patientPasswordHash,
       role: "patient",
       dob: new Date("1990-09-23"),
@@ -422,9 +422,9 @@ NO IMMEDIATE ACTION NEEDED
     console.log('\n================================================================');
     console.log('Seed data successfully generated.');
     console.log('Use the following credentials to test the features:');
-    console.log('Admin:   admin@antigravity.com   / Admin@123   → /admin');
-    console.log('Doctor:  doctor@antigravity.com  / Doctor@123  → /doctor');
-    console.log('Patient: patient1@antigravity.com / Patient@123 → /dashboard');
+    console.log('Admin:   admin@healara.com   / Admin@123   → /admin');
+    console.log('Doctor:  doctor@healara.com  / Doctor@123  → /doctor');
+    console.log('Patient: patient1@healara.com / Patient@123 → /dashboard');
     console.log('================================================================\n');
 
     process.exit(0);

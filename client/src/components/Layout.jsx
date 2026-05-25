@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { AuthContext } from '../context/AuthContext';
 import useNotifications from '../hooks/useNotifications';
+import BrandLogo from './BrandLogo';
 import { Bell, Check, CircleDot } from 'lucide-react';
 
 export default function Layout() {
@@ -34,7 +35,11 @@ export default function Layout() {
         
         {/* Top Header Bar */}
         <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 sticky top-0 z-10">
-          <div>
+          <div className="flex items-center">
+            {/* Show logo on mobile since sidebar is hidden, or show alongside text */}
+            <div className="md:hidden mr-2 -ml-2 w-16 h-8 overflow-hidden relative">
+              <BrandLogo style={{ transform: 'scale(0.2)', transformOrigin: 'left center', position: 'absolute', top: '-10px' }} />
+            </div>
             <h2 className="text-lg font-semibold text-gray-800">
               Welcome back, <span className="text-teal-600">{user.name.split(' ')[0]}</span>
             </h2>

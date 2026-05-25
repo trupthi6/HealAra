@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import BrandLogo from '../components/BrandLogo';
 import { Activity, Mail, Lock, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -38,8 +39,8 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md flex flex-col items-center">
-        <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-teal-600 text-white shadow-md">
-          <Activity className="h-6 w-6" />
+        <div className="flex items-center justify-center -mt-8 -mb-4">
+          <BrandLogo style={{ transform: 'scale(0.65)', transformOrigin: 'center' }} />
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 tracking-tight">
           Welcome to HealAra

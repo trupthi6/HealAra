@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api';
+import BrandLogo from '../components/BrandLogo';
 import {
   Activity,
   Mail,
@@ -144,8 +145,8 @@ export default function Register() {
 
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-teal-600 text-white shadow-lg mb-4">
-            <Activity className="h-7 w-7" />
+          <div className="flex items-center justify-center -mt-8 -mb-4">
+            <BrandLogo style={{ transform: 'scale(0.65)', transformOrigin: 'center' }} />
           </div>
           <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
           <p className="mt-2 text-sm text-gray-500">

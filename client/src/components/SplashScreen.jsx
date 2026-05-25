@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import BrandLogo from './BrandLogo';
 export default function SplashScreen({ onComplete }) {
   const [fadeOut, setFadeOut] = useState(false);
 
@@ -264,71 +264,7 @@ export default function SplashScreen({ onComplete }) {
       `}</style>
 
       <div className="splash-logo-wrapper">
-        <div className="scene">
-          {/* Orbit Stage */}
-          <div className="stage">
-            <svg viewBox="0 0 210 210">
-              <circle className="core-ring" cx="105" cy="105" r="16" />
-              <circle className="core" cx="105" cy="105" r="16" />
-              <text className="plett" x="105" y="105">A</text>
-
-              {/* Orbit B (Blood Pressure) */}
-              <g transform="rotate(-30 105 105)">
-                <ellipse className="arc path-b" cx="105" cy="105" rx="80" ry="56" />
-                <ellipse className="comet-b" cx="105" cy="105" rx="80" ry="56" />
-              </g>
-
-              {/* Orbit M (Mood) */}
-              <g transform="rotate(30 105 105)">
-                <ellipse className="arc path-m" cx="105" cy="105" rx="80" ry="56" />
-                <ellipse className="comet-m" cx="105" cy="105" rx="80" ry="56" />
-              </g>
-
-              {/* Orbit N (Glucose) */}
-              <g transform="rotate(90 105 105)">
-                <ellipse className="arc path-n" cx="105" cy="105" rx="80" ry="56" />
-                <ellipse className="comet-n" cx="105" cy="105" rx="80" ry="56" />
-              </g>
-
-              {/* Planet B (Blood Pressure) */}
-              <g transform="rotate(-30 105 105) scale(1, 0.7)">
-                <g className="planet-wrap pb">
-                  <circle className="planet-dot" cx="185" cy="105" r="9" fill="#0D9488" />
-                  <text className="plett" x="185" y="105">B</text>
-                  <text className="plabel" x="185" y="126">BP</text>
-                </g>
-              </g>
-
-              {/* Planet M (Mood) */}
-              <g transform="rotate(30 105 105) scale(1, 0.7)">
-                <g className="planet-wrap pm">
-                  <circle className="planet-dot" cx="185" cy="105" r="9" fill="#2DD4BF" />
-                  <text className="plett" x="185" y="105">M</text>
-                  <text className="plabel" x="185" y="126">Mood</text>
-                </g>
-              </g>
-
-              {/* Planet N (Glucose) */}
-              <g transform="rotate(90 105 105) scale(1, 0.7)">
-                <g className="planet-wrap pn">
-                  <circle className="planet-dot" cx="185" cy="105" r="9" fill="#5EEAD4" />
-                  <text className="plett" x="185" y="105">G</text>
-                  <text className="plabel" x="185" y="126">Glucose</text>
-                </g>
-              </g>
-            </svg>
-          </div>
-
-          {/* Vertical Divider */}
-          <div className="rule"></div>
-
-          {/* Wordmark Branding */}
-          <div className="wm">
-            <span className="wm-heal">Anti</span>
-            <span className="wm-ara">gravity</span>
-            <span className="wm-tag">HEALTH INTELLIGENCE PLATFORM</span>
-          </div>
-        </div>
+        <BrandLogo style={{ transform: 'scale(1)', transformOrigin: 'center' }} />
       </div>
     </div>
   );

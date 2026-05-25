@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import BrandLogo from './BrandLogo';
 import { 
   LayoutDashboard, 
   Activity, 
@@ -51,9 +52,8 @@ export default function Sidebar() {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-60 bg-white border-r border-gray-150 h-screen z-20">
         {/* Logo Section */}
-        <div className="p-6 border-b border-gray-100 flex items-center gap-2">
-          <Activity className="h-6 w-6 text-teal-600" />
-          <span className="font-bold text-xl tracking-tight text-teal-600">HealAra</span>
+        <div className="p-6 border-b border-gray-100 flex items-center h-20">
+          <BrandLogo style={{ transform: 'scale(0.25)', transformOrigin: 'left center' }} />
         </div>
 
         {/* Navigation Links */}

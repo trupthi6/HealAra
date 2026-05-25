@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { AuthContext } from '../context/AuthContext';
 import useNotifications from '../hooks/useNotifications';
-import { Bell, Check, CircleDot, ShieldAlert } from 'lucide-react';
+import { Bell, Check, CircleDot } from 'lucide-react';
 
 export default function Layout() {
   const { user } = useContext(AuthContext);

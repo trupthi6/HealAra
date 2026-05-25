@@ -45,6 +45,11 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/advisor', advisorRoutes);
 app.use('/api/users', usersRoutes);
 
+// Health Check Endpoint (must be before wildcard)
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy', timestamp: new Date() });
+});
+
 // Serve static assets from React client build folder
 app.use(express.static(path.resolve(__dirname, '../client/dist')));
 
@@ -54,11 +59,6 @@ app.get('*', (req, res) => {
     return res.status(404).json({ success: false, message: 'API endpoint not found' });
   }
   res.sendFile(path.resolve(__dirname, '../client/dist', 'index.html'));
-});
-
-// Health Check Endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', timestamp: new Date() });
 });
 
 // Database Connection

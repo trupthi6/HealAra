@@ -120,7 +120,7 @@ export default function Register() {
     setLoading(true);
     try {
       await register(payload);
-      toast.success('Registration successful! Welcome to VitalTrack.');
+      toast.success('Registration successful! Welcome to Antigravity.');
       if (role === 'doctor') {
         navigate('/doctor');
       } else {
@@ -149,7 +149,7 @@ export default function Register() {
           </div>
           <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
           <p className="mt-2 text-sm text-gray-500">
-            Join VitalTrack to start monitoring your health
+            Join Antigravity to start monitoring your health
           </p>
         </div>
 

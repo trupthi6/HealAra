@@ -6,7 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "build": "npm --prefix client install && npm --prefix client run build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.98.0",

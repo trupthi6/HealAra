@@ -66,15 +66,19 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/vitalt
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('MongoDB successfully connected.');
-    // Start listening once DB connects
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+    // Only listen locally, Vercel Serverless handles the port binding automatically
+    if (process.env.NODE_ENV !== 'production') {
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+      });
+    }
   })
   .catch(err => {
     console.error('Database connection error:', err);
-    process.exit(1);
   });
+
+// Export the app for Vercel Serverless Functions
+module.exports = app;
 
 // Global Error Handler Middleware
 app.use((err, req, res, next) => {

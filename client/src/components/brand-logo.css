@@ -10,14 +10,13 @@ body {
 
 .scene {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 52px;
-  padding: 52px 40px;
-  background: #ffffff;
-  border-radius: 24px;
-  flex-wrap: wrap;
-  min-height: 300px;
+  gap: 32px;
+  padding: 40px;
+  background: transparent;
+  width: 100%;
 }
 
 /* ORBIT STAGE */
@@ -150,29 +149,35 @@ body {
   100% { opacity: .5; transform: scale(1); }
 }
 
-/* WORDMARK */
 .wm {
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
+}
+
+.wm-logo {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
 }
 
 .wm-heal {
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 72px;
-  font-weight: 100;
+  font-size: 56px;
+  font-weight: 200;
   color: #0f172a;
-  letter-spacing: -4px;
+  letter-spacing: -2px;
   line-height: 1;
 }
 
 .wm-ara {
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 72px;
-  font-weight: 100;
+  font-size: 56px;
+  font-weight: 600;
   color: #0D9488;
-  letter-spacing: -4px;
-  line-height: 1.05;
+  letter-spacing: -2px;
+  line-height: 1;
 }
 
 .wm-tag {
@@ -184,13 +189,9 @@ body {
   margin-top: 16px;
 }
 
-/* Vertical rule */
+/* Vertical rule removed for stacked layout */
 .rule {
-  width: 1px;
-  height: 150px;
-  background: #e2e8f0;
-  align-self: center;
-  flex-shrink: 0;
+  display: none;
 }
 
 /* Label text on planets */

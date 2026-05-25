@@ -60,8 +60,10 @@ export default function BrandLogo({ className = '', style = {} }) {
       <div className="rule"></div>
 
       <div className="wm">
-        <div className="wm-heal">Heal</div>
-        <div className="wm-ara">Ara</div>
+        <div className="wm-logo">
+          <span className="wm-heal">Heal</span>
+          <span className="wm-ara">Ara</span>
+        </div>
         <div className="wm-tag">MIND &nbsp;·&nbsp; BODY &nbsp;·&nbsp; NUTRITION &nbsp;·&nbsp; AI</div>
       </div>
     </div>

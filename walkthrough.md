@@ -148,4 +148,16 @@ Open **`http://localhost:5000`** in your browser.
 - **Select Date Ranges:** Toggle between the "1 Week", "1 Month", and "3 Months" filters to verify that aggregated statistics (Average, Minimum, Maximum) dynamically re-calculate and display correct metrics and units.
 - **Cross-Verify Patient View:** Log back in as the patient (e.g. `patient1@vitaltrack.com`) and navigate to the **Trends** page. Verify that the same layout (`PatientTrendsView`) renders the patient's own trends perfectly.
 
+### 8. Splash Screen & Branding Verification Flow
+- **App Load Splash Screen:** Open the web app at `http://localhost:5000/`.
+- **Logo Transition:** Confirm that a white splash screen covers the full viewport, displaying the **Antigravity** orbit logo and wordmark.
+- **Entry Animation:** Verify that the logo fades up smoothly from a `20px` vertical offset to its centered position over `600ms`.
+- **Exit Transition:** Confirm that after `2s` total hold time, the splash screen fades out to `opacity: 0` over `400ms` and is completely unmounted from the DOM.
+- **Verify Wordmark details:** Ensure the wordmark reads:
+  - `Anti` (class `.wm-heal`)
+  - `gravity` (class `.wm-ara`)
+  - `HEALTH INTELLIGENCE PLATFORM` (class `.wm-tag`)
+- **Self-containment Check:** Verify that removing `<SplashScreen />` from `App.jsx` cleanly disables the splash screen with no layout, routing, or state side effects.
+
+
 

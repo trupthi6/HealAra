@@ -57,4 +57,20 @@
   - [x] Rebuild client application via `npm run build`
   - [x] Verify charts and statistics for all 5 parameters (glucose, blood pressure, heart rate, weight, mood)
 
+# Task List — Feature Addon 4 (Branding & Splash Screen)
+
+- [x] Design Antigravity Orbit Logo
+  - [x] Implement tilted ellipse orbit animations and comet dashoffsets
+  - [x] Configure pb, pm, pn planet wraps with labels (BP, Mood, Glucose) and letters (B, M, G)
+- [x] Create Isolated Splash Screen Component
+  - [x] Write `SplashScreen.jsx` featuring Swiggy-like fade-up animation (600ms) and fade-out (400ms after 2s hold)
+  - [x] Ensure self-contained CSS styles inside a `<style>` block
+- [x] Inject Splash Screen
+  - [x] Integrate `SplashScreen` rendering inside `App.jsx` as the entry point
+  - [x] Unmount splash screen after the transition completes with no side effects
+- [x] Verification
+  - [x] Verify production build is successful
+  - [x] Restart unified node server to serve built files
+
+
 

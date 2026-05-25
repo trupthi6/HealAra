@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import Layout from './components/Layout';
+import SplashScreen from './components/SplashScreen';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -72,11 +73,15 @@ function RootSelector() {
 }
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
-    <AuthProvider>
-      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-      <BrowserRouter>
-        <Routes>
+    <>
+      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      <AuthProvider>
+        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+        <BrowserRouter>
+          <Routes>
           {/* Public Authentication Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -188,5 +193,6 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </>
   );
 }

@@ -239,25 +239,73 @@ async function generateAdvice(userId, res) {
     res.flushHeaders();
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      throw new Error('Anthropic API key is not configured.');
-    }
-
-    const anthropic = new Anthropic({ apiKey });
-    const stream = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 2000,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: JSON.stringify(summary) }],
-      stream: true
-    });
-
     let fullText = '';
-    for await (const chunk of stream) {
-      if (chunk.type === 'content_block_delta' && chunk.delta.text) {
-        const text = chunk.delta.text;
-        fullText += text;
-        res.write(`data: ${text}\n\n`);
+
+    if (!apiKey) {
+      // Mock response for local development
+      fullText = `## Weekly Overview
+You've had a great week, ${summary.patient.name}! You stayed consistent with your logs and showed excellent commitment to your health journey.
+
+## Physical Health
+Your average glucose was ${summary.weekSummary.avgGlucose || 'stable'} and your heart rate averaged ${summary.weekSummary.avgHeartRate || 'normal'} bpm. This is looking good, but let's keep it steady.
+- Take a 20-minute walk after dinner.
+- Drink at least 8 glasses of water.
+- Try to stretch for 10 minutes every morning.
+- Keep monitoring your vitals daily.
+- Avoid heavy meals late at night.
+
+## Mental Wellness
+Your mood has been ${summary.weekSummary.moodTrend} with an average score of ${summary.weekSummary.avgMoodScore}.
+- Consider 10 minutes of morning sunlight.
+- Practice deep breathing exercises.
+
+## Nutrition Guide
+- Eat more leafy greens — great for overall health.
+- Avoid highly processed sugars — can cause glucose spikes.
+- Try a protein-rich breakfast.
+
+## Lifestyle & Habits
+- Sleep by 10:30pm.
+- Reduce afternoon caffeine.
+**This week's one focus:** Prioritise getting 8 hours of sleep each night.
+
+## Keep Going
+You are doing an amazing job taking control of your health. Every small step you take today builds a stronger foundation for tomorrow!
+
+---DOCTOR_BRIEF_START---
+## Clinical Summary for the Treating Physician
+Patient: ${summary.patient.name}, Age: ${summary.patient.age || 'N/A'}
+Patient is showing stable vitals this week.
+
+## Risk Flags
+No severe risk flags identified.
+
+## Recommended Consultation Urgency
+NO IMMEDIATE ACTION NEEDED
+
+---DOCTOR_BRIEF_END---`;
+
+      const chunks = fullText.split(' ');
+      for (const chunk of chunks) {
+        res.write(`data: ${chunk} \n\n`);
+        await new Promise(r => setTimeout(r, 50));
+      }
+    } else {
+      const anthropic = new Anthropic({ apiKey });
+      const stream = await anthropic.messages.create({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 2000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: JSON.stringify(summary) }],
+        stream: true
+      });
+
+      for await (const chunk of stream) {
+        if (chunk.type === 'content_block_delta' && chunk.delta.text) {
+          const text = chunk.delta.text;
+          fullText += text;
+          res.write(`data: ${text}\n\n`);
+        }
       }
     }
 

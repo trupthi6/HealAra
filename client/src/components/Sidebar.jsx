@@ -1,133 +1,110 @@
 import React, { useContext } from 'react';
-import { NavLink } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import BrandLogo from './BrandLogo';
-import { 
-  LayoutDashboard, 
-  Activity, 
-  TrendingUp, 
-  Pill, 
-  AlertTriangle, 
-  LogOut, 
-  Stethoscope,
-  User,
-  Shield,
-  Brain
+import { NavLink, useNavigate } from 'react-router-dom';
+import {
+  LayoutDashboard, Heart, Activity, Pill, Calendar,
+  FileText, Target, MessageCircle, Settings, Headphones,
+  LogOut
 } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
+
+const navItems = [
+  { icon: LayoutDashboard, label: 'Dashboard',      to: '/dashboard' },
+  { icon: Heart,           label: 'Health Overview', to: '/trends'    },
+  { icon: Activity,        label: 'Metrics',         to: '/alerts'    },
+  { icon: Pill,            label: 'Medications',     to: '/medications'},
+  { icon: Calendar,        label: 'Appointments',    to: '#'          },
+  { icon: FileText,        label: 'Reports',         to: '#'          },
+  { icon: Target,          label: 'Goals',           to: '#'          },
+  { icon: MessageCircle,   label: 'Messages',        to: '#'          },
+  { icon: Settings,        label: 'Settings',        to: '/settings'  },
+];
 
 export default function Sidebar() {
-  const { user, logout } = useContext(AuthContext);
-
-  if (!user) return null;
-
-  const patientLinks = [
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/log', label: 'Log Vitals', icon: Activity },
-    { to: '/trends', label: 'Trends', icon: TrendingUp },
-    { to: '/medications', label: 'Medications', icon: Pill },
-    { to: '/alerts', label: 'Alerts', icon: AlertTriangle },
-    { to: '/advisor', label: 'AI Advisor', icon: Brain },
-    { to: '/settings', label: 'Settings', icon: User }
-  ];
-
-  const doctorLinks = [
-    { to: '/doctor', label: 'Doctor Portal', icon: Stethoscope }
-  ];
-
-  const adminLinks = [
-    { to: '/admin', label: 'Admin Panel', icon: Shield }
-  ];
-
-  let links = [];
-  if (user.role === 'admin') {
-    links = adminLinks;
-  } else if (user.role === 'doctor') {
-    links = doctorLinks;
-  } else {
-    links = patientLinks;
-  }
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-60 bg-white border-r border-gray-150 h-screen z-20">
-        {/* Logo Section */}
-        <div className="p-6 border-b border-gray-100 flex items-center h-20">
-          <BrandLogo style={{ transform: 'scale(0.25)', transformOrigin: 'left center' }} />
-        </div>
-
-        {/* Navigation Links */}
-        <nav className="flex-1 px-4 py-6 space-y-1">
-          {links.map((link) => {
-            const Icon = link.icon;
-            return (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                className={({ isActive }) => 
-                  `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    isActive 
-                      ? 'bg-teal-50 text-teal-600 shadow-sm border-l-4 border-teal-600' 
-                      : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                  }`
-                }
-              >
-                <Icon className="h-5 w-5" />
-                {link.label}
-              </NavLink>
-            );
-          })}
+      <aside
+        className="hidden md:flex flex-col fixed top-[56px] left-0 z-40 bg-white border-r border-slate-200 overflow-hidden"
+        style={{ width: 200, height: 'calc(100vh - 56px)' }}
+      >
+        {/* Nav items */}
+        <nav className="flex-1 pt-3 overflow-y-auto scrollbar-none">
+          {navItems.map(({ icon: Icon, label, to }) => (
+            <NavLink
+              key={label}
+              to={to}
+              className={({ isActive }) =>
+                `flex items-center gap-[10px] mx-2 my-0.5 px-4 rounded-lg transition-all duration-150 cursor-pointer select-none ${
+                  isActive
+                    ? 'bg-teal-50 text-teal-600'
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                }`
+              }
+              style={{ height: 42, fontSize: 14, fontWeight: 500 }}
+              onClick={e => { if (to === '#') e.preventDefault(); }}
+            >
+              {({ isActive }) => (
+                <>
+                  <Icon
+                    size={16}
+                    className={isActive ? 'text-teal-600' : 'text-slate-400'}
+                  />
+                  <span>{label}</span>
+                </>
+              )}
+            </NavLink>
+          ))}
         </nav>
 
-        {/* User Footer Profile */}
-        <div className="p-4 border-t border-gray-100 bg-gray-50">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-9 w-9 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center font-semibold text-sm">
-              {user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+        {/* Bottom section */}
+        <div className="mt-auto p-3">
+          {/* Need Help card */}
+          <div className="bg-slate-50 border border-slate-200 rounded-[10px] p-3">
+            <div className="flex items-center gap-2 mb-0.5">
+              <Headphones size={16} className="text-teal-600 shrink-0" />
+              <span className="text-[13px] font-semibold text-slate-900">Need Help?</span>
             </div>
-            <div className="overflow-hidden">
-              <h4 className="text-sm font-semibold text-gray-900 truncate">{user.name}</h4>
-              <p className="text-xs text-gray-500 capitalize truncate">{user.role}</p>
-            </div>
+            <p className="text-[11px] text-slate-400 leading-tight pl-6">Talk to our support team</p>
           </div>
+          <button className="w-full mt-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg py-2 text-[13px] font-medium transition-colors">
+            Contact Support
+          </button>
+
+          {/* Logout */}
           <button
-            onClick={logout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-gray-200 bg-white rounded-lg text-xs font-medium text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors"
+            onClick={() => { logout(); navigate('/login'); }}
+            className="flex items-center gap-2 w-full mt-3 px-4 py-2.5 text-slate-400 hover:text-red-500 text-sm transition-colors rounded-lg hover:bg-red-50"
           >
-            <LogOut className="h-3.5 w-3.5" />
-            Logout
+            <LogOut size={16} />
+            <span>Logout</span>
           </button>
         </div>
       </aside>
 
-      {/* Mobile Bottom Navigation Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-16 z-30 px-2 shadow-lg">
-        {links.map((link) => {
-          const Icon = link.icon;
-          return (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={({ isActive }) => 
-                `flex flex-col items-center justify-center py-1 px-3 rounded-md text-xs font-medium transition-all ${
-                  isActive 
-                    ? 'text-teal-600' 
-                    : 'text-gray-400 hover:text-gray-700'
-                }`
-              }
-            >
-              <Icon className="h-5 w-5 mb-0.5" />
-              <span className="text-[10px]">{link.label}</span>
-            </NavLink>
-          );
-        })}
-        <button
-          onClick={logout}
-          className="flex flex-col items-center justify-center py-1 px-3 rounded-md text-xs font-medium text-red-500"
-        >
-          <LogOut className="h-5 w-5 mb-0.5" />
-          <span className="text-[10px]">Logout</span>
-        </button>
+      {/* Mobile Bottom Tab Bar */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 flex">
+        {navItems.slice(0, 5).map(({ icon: Icon, label, to }) => (
+          <NavLink
+            key={label}
+            to={to}
+            className={({ isActive }) =>
+              `flex-1 flex flex-col items-center justify-center py-2 gap-0.5 text-[10px] font-medium transition-colors ${
+                isActive ? 'text-teal-600' : 'text-slate-400'
+              }`
+            }
+            onClick={e => { if (to === '#') e.preventDefault(); }}
+          >
+            {({ isActive }) => (
+              <>
+                <Icon size={20} className={isActive ? 'text-teal-600' : 'text-slate-400'} />
+                <span>{label}</span>
+              </>
+            )}
+          </NavLink>
+        ))}
       </nav>
     </>
   );

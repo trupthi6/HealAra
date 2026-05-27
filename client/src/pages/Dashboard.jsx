@@ -1,411 +1,443 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import api from '../api';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import StatCard from '../components/StatCard';
-import AlertBadge from '../components/AlertBadge';
-import { 
-  Plus, 
-  Flame, 
-  Heart, 
-  Activity, 
-  Smile, 
-  AlertTriangle, 
-  Pill, 
-  TrendingUp, 
-  Calendar,
-  FileDown,
-  Brain,
-  X
+import api from '../api';
+import {
+  Download, Sparkles, RefreshCw,
+  Activity, Brain, Leaf, TrendingUp, Pill,
+  Droplets, Footprints, Moon, Weight,
+  UtensilsCrossed, Zap, ChevronRight, Target
 } from 'lucide-react';
-import { 
-  ResponsiveContainer, 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip,
-  ReferenceLine
+import {
+  LineChart, Line, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, CartesianGrid
 } from 'recharts';
+import ProgressBar from '../components/ProgressBar';
+import PhysicalHealthTab from './DashboardTabs/PhysicalHealthTab';
+import MentalWellnessTab from './DashboardTabs/MentalWellnessTab';
+import NutritionGuideTab from './DashboardTabs/NutritionGuideTab';
+import LifestyleHabitsTab from './DashboardTabs/LifestyleHabitsTab';
+import MedicationsTab from './DashboardTabs/MedicationsTab';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
+/* ── Helpers ── */
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function parseSection(text, header) {
+  if (!text) return '';
+  const parts = text.split(/(?=## )/);
+  const found = parts.find(p => p.trim().startsWith(`## ${header}`));
+  return found ? found.replace(`## ${header}`, '').trim() : '';
+}
+
+function getFirstParagraph(text) {
+  if (!text) return '';
+  const lines = text.split('\n').filter(l => l.trim() && !l.startsWith('#') && !l.startsWith('-'));
+  return lines[0] || '';
+}
+
+function getKeepGoing(text) {
+  const section = parseSection(text, 'Keep Going');
+  return section.replace(/^["']|["']$/g, '').trim();
+}
+
+const Skeleton = ({ h = 'h-4', w = 'w-full' }) => (
+  <div className={`${h} ${w} skeleton rounded`} />
+);
+
+const TABS = [
+  { id: 'physical',   label: 'Physical Health',   icon: Activity   },
+  { id: 'mental',     label: 'Mental Wellness',    icon: Brain      },
+  { id: 'nutrition',  label: 'Nutrition Guide',    icon: Leaf       },
+  { id: 'lifestyle',  label: 'Lifestyle & Habits', icon: TrendingUp },
+  { id: 'medication', label: 'Medications',        icon: Pill       },
+];
+
 export default function Dashboard() {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(true);
-  const [summary, setSummary] = useState({ streak: 0, totalLogs: 0 });
-  const [showUrgentBanner, setShowUrgentBanner] = useState(true);
+  const [activeTab, setActiveTab] = useState('physical');
+  const [trendData, setTrendData] = useState([]);
+  const [loadingTrend, setLoadingTrend] = useState(true);
+  const [meds, setMeds] = useState([]);
   const [latestLog, setLatestLog] = useState(null);
-  const [alerts, setAlerts] = useState([]);
-  const [medications, setMedications] = useState([]);
-  const [glucoseChartData, setGlucoseChartData] = useState([]);
-  const [completedMeds, setCompletedMeds] = useState(() => {
-    // Persist checked medications for today in localStorage
-    const saved = localStorage.getItem(`completed_meds_${new Date().toDateString()}`);
-    return saved ? JSON.parse(saved) : {};
-  });
+  const [aiAdvice, setAiAdvice] = useState(user?.aiAdvice || '');
+  const [loadingAI, setLoadingAI] = useState(!user?.aiAdvice);
+  const abortController = useRef(null);
 
+  const firstName = user?.name?.split(' ')[0] || 'there';
+
+  /* ── Load AI advice (cached) ── */
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch data in parallel
-        const [summaryRes, logsRes, alertsRes, medsRes, trendsRes] = await Promise.all([
-          api.get('/trends/summary'),
-          api.get('/logs?limit=5'),
-          api.get('/alerts'),
-          api.get('/medications'),
-          api.get('/trends/vitals?field=glucose&period=week')
-        ]);
-
-        if (summaryRes.data.success) setSummary(summaryRes.data.summary);
-        if (logsRes.data.success && logsRes.data.logs.length > 0) {
-          setLatestLog(logsRes.data.logs[0]);
+    if (user?.aiAdvice) {
+      setAiAdvice(user.aiAdvice);
+      setLoadingAI(false);
+      return;
+    }
+    api.get('/advisor/weekly-advice')
+      .then(res => {
+        if (res.data.success && res.data.cached) {
+          setAiAdvice(res.data.aiAdvice || '');
         }
-        if (alertsRes.data.success) setAlerts(alertsRes.data.alerts.slice(0, 3));
-        if (medsRes.data.success) setMedications(medsRes.data.medications);
-        if (trendsRes.data.success) setGlucoseChartData(trendsRes.data.trends);
-        
-      } catch (err) {
-        console.error('Error loading dashboard data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
+      })
+      .catch(() => {})
+      .finally(() => setLoadingAI(false));
   }, []);
 
-  const handleMedToggle = (medId, medName) => {
-    const updated = {
-      ...completedMeds,
-      [medId]: !completedMeds[medId]
-    };
-    setCompletedMeds(updated);
-    localStorage.setItem(`completed_meds_${new Date().toDateString()}`, JSON.stringify(updated));
-    
-    if (updated[medId]) {
-      toast.success(`Marked ${medName} as taken!`);
-    }
-  };
+  /* ── Load trend chart ── */
+  useEffect(() => {
+    api.get('/trends/vitals?field=glucose&period=week')
+      .then(res => {
+        const raw = res.data?.data || res.data?.vitals || [];
+        const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const formatted = raw.map((d, i) => ({
+          day: dayLabels[i] || `D${i + 1}`,
+          glucose: Math.round(d.avg || d.value || 0),
+        })).filter(d => d.glucose > 0);
+        setTrendData(formatted);
+      })
+      .catch(() => {})
+      .finally(() => setLoadingTrend(false));
+  }, []);
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
-  };
+  /* ── Load medications ── */
+  useEffect(() => {
+    api.get('/medications')
+      .then(res => {
+        const data = res.data?.medications || res.data?.data || [];
+        setMeds(data.filter(m => m.active));
+      })
+      .catch(() => {});
+  }, []);
 
-  // Format date helper for the chart X-axis
-  const formatChartDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
+  /* ── Load latest log for bottom cards ── */
+  useEffect(() => {
+    api.get('/logs?limit=1')
+      .then(res => {
+        const logs = res.data?.logs || res.data?.data || [];
+        if (logs.length > 0) setLatestLog(logs[0]);
+      })
+      .catch(() => {});
+  }, []);
 
-  const downloadPDF = async () => {
-    const toastId = toast.loading('Generating PDF report...');
+  /* ── Regenerate AI advice ── */
+  const handleRegenerate = async () => {
+    setLoadingAI(true);
+    setAiAdvice('');
+    abortController.current = new AbortController();
     try {
-      const response = await api.get('/reports/weekly?type=patient', {
-        responseType: 'blob'
+      const baseUrl = api.defaults.baseURL || '/api';
+      const response = await fetch(`${baseUrl}/advisor/weekly-advice?force=true`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+        signal: abortController.current.signal
       });
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const blobUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = `weekly_report_${new Date().toISOString().split('T')[0]}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(blobUrl);
-      toast.success('PDF downloaded successfully!', { id: toastId });
-    } catch (err) {
-      console.error('Error downloading PDF:', err);
-      toast.error('Failed to download PDF report.', { id: toastId });
+      if (!response.ok) {
+        toast.error('Could not regenerate — try again later.');
+        setLoadingAI(false);
+        return;
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let fullText = '';
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() || '';
+        for (const part of parts) {
+          if (part.trim() === '') continue;
+          if (part.startsWith('data: ')) {
+            const dataStr = part.replace(/^data:\s*/, '');
+            if (dataStr === '[DONE]' || dataStr === '[ERROR]') {
+              setLoadingAI(false);
+              return;
+            }
+            fullText += dataStr;
+            setAiAdvice(fullText);
+          }
+        }
+      }
+    } catch (e) {
+      if (e.name !== 'AbortError') toast.error('Failed to generate advice.');
+    } finally {
+      setLoadingAI(false);
     }
   };
 
-  const renderTrendArrow = (field) => {
-    const trend = summary?.trends?.[field];
-    if (!trend || trend.status === 'stable') return null;
-    const isImproving = trend.status === 'improving';
-    const arrow = isImproving ? '↑' : '↓';
-    const color = isImproving ? 'text-green-500' : 'text-red-500';
-    return (
-      <span className={`text-sm font-extrabold ml-1.5 align-middle ${color}`} title={isImproving ? 'Improving trend vs last week' : 'Worsening trend vs last week'}>
-        {arrow}
-      </span>
-    );
-  };
+  const overviewText = getFirstParagraph(aiAdvice);
+  const keepGoingText = getKeepGoing(aiAdvice);
+
+  /* ── Bottom metric cards data ── */
+  const weight = latestLog?.vitals?.weight;
+  const waterIntake = latestLog?.vitals?.waterIntake;
+  const steps = latestLog?.vitals?.steps;
+  const sleep = latestLog?.vitals?.sleep;
 
   return (
-    <div className="space-y-6">
-      {/* Urgent consultation red alert banner */}
-      {user?.consultationUrgency === 'urgent' && showUrgentBanner && (
-        <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-center justify-between shadow-xs animate-fadeIn shrink-0">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
-            <span className="text-xs font-semibold">Your doctor has flagged your recent report for urgent review. Contact your doctor soon.</span>
-          </div>
-          <button 
-            onClick={() => setShowUrgentBanner(false)} 
-            className="text-red-500 hover:text-red-750 p-1 rounded-lg hover:bg-red-100/40 transition-colors shrink-0"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )}
+    <div className="p-7 pb-20 md:pb-7 max-w-none" style={{ minHeight: 'calc(100vh - 56px)' }}>
 
-      {/* Top Greeting Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* 4A — Header row */}
+      <div className="flex items-start justify-between mb-5">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 leading-tight">
-            {getGreeting()}, {user?.name}
+          <h1 className="text-[24px] font-bold text-slate-900 leading-tight">
+            {getGreeting()}, {firstName}! 👋
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Here is a quick overview of your health status today.</p>
+          <p className="text-[14px] text-slate-500 mt-1">Here's your health overview and insights for today.</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            to="/log"
-            className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm px-4 py-2.5 rounded-lg shadow-sm transition-colors"
-          >
-            <Plus className="h-4.5 w-4.5" />
-            Quick Log Vitals
-          </Link>
-          
-          <Link
-            to="/advisor"
-            className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-teal-600 border border-teal-200 font-semibold text-sm px-4 py-2.5 rounded-lg transition-colors"
-          >
-            <Brain className="h-4.5 w-4.5 text-teal-600" />
-            Get AI Health Report
-          </Link>
-
-          <button
-            onClick={downloadPDF}
-            className="inline-flex items-center gap-2 bg-white hover:bg-gray-55 text-teal-650 border border-teal-200 font-semibold text-sm px-4 py-2.5 rounded-lg transition-colors"
-          >
-            <FileDown className="h-4.5 w-4.5" />
-            Report PDF
-          </button>
-        </div>
+        <button className="flex items-center gap-1.5 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-lg px-4 py-2 text-[14px] font-medium text-slate-600 transition-colors shadow-card shrink-0 ml-4">
+          <Download size={16} className="text-slate-500" />
+          Export Report
+        </button>
       </div>
 
-      {/* Grid of 4 Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Latest Glucose"
-          value={latestLog?.vitals?.glucose !== undefined && latestLog?.vitals?.glucose !== null ? <>{latestLog.vitals.glucose}{renderTrendArrow('glucose')}</> : null}
-          unit="mg/dL"
-          label={latestLog ? `Logged ${new Date(latestLog.loggedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'No logs recorded'}
-          icon={Activity}
-          color={latestLog?.vitals?.glucose > (user?.thresholds?.glucoseMax || 180) ? 'red' : 'teal'}
-          loading={loading}
-        />
-        <StatCard
-          title="Latest Blood Pressure"
-          value={latestLog?.vitals?.bpSystolic && latestLog?.vitals?.bpDiastolic ? <>{latestLog.vitals.bpSystolic}/{latestLog.vitals.bpDiastolic}{renderTrendArrow('bp')}</> : null}
-          unit="mmHg"
-          label={latestLog ? `Source: ${latestLog.source}` : 'No logs recorded'}
-          icon={Heart}
-          color={latestLog?.vitals?.bpSystolic > (user?.thresholds?.bpSystolicMax || 140) ? 'red' : 'indigo'}
-          loading={loading}
-        />
-        <StatCard
-          title="Mood Rating"
-          value={latestLog?.moodScore !== undefined && latestLog?.moodScore !== null ? <>{latestLog.moodScore}{renderTrendArrow('mood')}</> : null}
-          unit="/10"
-          label={latestLog?.notes ? `"${latestLog.notes.slice(0, 30)}..."` : 'No mood logged'}
-          icon={Smile}
-          color="amber"
-          loading={loading}
-        />
-        <StatCard
-          title="Daily Streak"
-          value={summary.streak}
-          unit="Days"
-          label={summary.streak > 0 ? "You're on a roll! Keep it up." : "Log vitals to start a streak."}
-          icon={Flame}
-          color="green"
-          loading={loading}
-        />
-      </div>
-
-      {/* Two Column Section: Chart and Side Panels */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Glucose Chart (2 Cols) */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="font-bold text-gray-800 text-base">Glucose Trend</h3>
-              <p className="text-xs text-gray-500 mt-0.5">Last 7 recorded logs</p>
-            </div>
-            <Link to="/trends" className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1">
-              View Detailed Trends <TrendingUp className="h-3 w-3" />
-            </Link>
+      {/* 4B — AI Health Summary */}
+      <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 mb-5 flex items-start justify-between gap-4 shadow-card">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 mb-2">
+            <Sparkles size={16} className="text-teal-600" />
+            <span className="text-[14px] font-semibold text-teal-600">AI Health Summary</span>
           </div>
-
-          {loading ? (
-            <div className="h-[220px] bg-gray-50 animate-shimmer rounded-xl flex items-center justify-center text-gray-400 text-xs">
-              Loading trends...
+          {loadingAI ? (
+            <div className="space-y-2">
+              <Skeleton h="h-3.5" w="w-full" />
+              <Skeleton h="h-3.5" w="w-4/5" />
             </div>
-          ) : glucoseChartData.length === 0 ? (
-            <div className="h-[220px] bg-gray-50 rounded-xl flex flex-col items-center justify-center text-center p-4">
-              <Activity className="h-8 w-8 text-gray-300 mb-2" />
-              <p className="text-xs text-gray-500 font-semibold">No vitals logged this week.</p>
-            </div>
+          ) : overviewText ? (
+            <p className="text-[14px] text-slate-700 italic leading-relaxed">
+              "{overviewText}"
+            </p>
           ) : (
-            <div className="h-[220px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={glucoseChartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                  <XAxis 
-                    dataKey="date" 
-                    tickFormatter={formatChartDate} 
-                    tick={{ fill: '#9ca3af', fontSize: 10 }}
-                    stroke="#e5e7eb"
-                  />
-                  <YAxis 
-                    tick={{ fill: '#9ca3af', fontSize: 10 }}
-                    stroke="#e5e7eb"
-                  />
-                  <Tooltip
-                    labelFormatter={formatChartDate}
-                    contentStyle={{ background: '#ffffff', borderRadius: '8px', border: '1px solid #f3f4f6' }}
-                    itemStyle={{ fontSize: '11px', color: '#0d9488', fontWeight: 600 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="avg"
-                    stroke="#0d9488"
-                    strokeWidth={2.5}
-                    dot={{ r: 3 }}
-                    activeDot={{ r: 5 }}
-                  />
-                  {user?.thresholds?.glucoseMax && (
-                    <ReferenceLine
-                      y={user.thresholds.glucoseMax}
-                      stroke="#ef4444"
-                      strokeDasharray="4 4"
-                      label={{ value: `Limit (${user.thresholds.glucoseMax})`, position: 'top', fill: '#ef4444', fontSize: 8, fontWeight: 700 }}
-                    />
-                  )}
-                </LineChart>
-              </ResponsiveContainer>
+            <div className="flex items-center gap-3">
+              <p className="text-[14px] text-slate-400 italic">Generate your first AI health report to see personalised insights.</p>
+              <button
+                onClick={() => navigate('/advisor')}
+                className="shrink-0 text-[13px] font-medium text-teal-600 hover:underline"
+              >
+                Generate Report →
+              </button>
             </div>
           )}
         </div>
-
-        {/* Side Panels (1 Col): Alerts and Medications */}
-        <div className="space-y-6">
-          
-          {/* Alerts Card */}
-          <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-800 text-base flex items-center gap-1.5">
-                <AlertTriangle className="h-5 w-5 text-amber-500" />
-                Recent Alerts
-              </h3>
-              <Link to="/alerts" className="text-xs font-semibold text-teal-600 hover:text-teal-700">
-                View All
-              </Link>
-            </div>
-
-            {loading ? (
-              <div className="space-y-3">
-                <div className="h-12 bg-gray-50 rounded-lg animate-shimmer"></div>
-                <div className="h-12 bg-gray-50 rounded-lg animate-shimmer"></div>
-              </div>
-            ) : alerts.length === 0 ? (
-              <div className="p-6 text-center border border-dashed border-gray-200 rounded-xl bg-gray-50">
-                <p className="text-xs text-green-600 font-semibold">All clear - no active alerts!</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {alerts.map((alert) => (
-                  <div 
-                    key={alert._id} 
-                    className={`p-3 rounded-lg border flex flex-col gap-1.5 ${
-                      alert.severity === 'critical' 
-                        ? 'bg-red-50 border-red-150' 
-                        : 'bg-amber-50 border-amber-150'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className={`text-[10px] font-bold uppercase tracking-wider ${
-                        alert.severity === 'critical' ? 'text-red-700' : 'text-amber-700'
-                      }`}>
-                        {alert.type.replace('_', ' ')}
-                      </span>
-                      <AlertBadge severity={alert.severity} />
-                    </div>
-                    <p className="text-xs text-gray-700 font-medium leading-normal">{alert.message}</p>
-                    <span className="text-[9px] text-gray-400">
-                      {new Date(alert.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Medications Checklist */}
-          <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-800 text-base flex items-center gap-1.5">
-                <Pill className="h-5 w-5 text-teal-600" />
-                Medications Today
-              </h3>
-              <Link to="/medications" className="text-xs font-semibold text-teal-600 hover:text-teal-700">
-                Manage
-              </Link>
-            </div>
-
-            {loading ? (
-              <div className="space-y-3">
-                <div className="h-10 bg-gray-50 rounded-lg animate-shimmer"></div>
-                <div className="h-10 bg-gray-50 rounded-lg animate-shimmer"></div>
-              </div>
-            ) : medications.length === 0 ? (
-              <div className="p-6 text-center border border-dashed border-gray-200 rounded-xl bg-gray-50">
-                <p className="text-xs text-gray-500 font-semibold">No active medications scheduled.</p>
-              </div>
-            ) : (
-              <div className="space-y-2.5 max-h-52 overflow-y-auto pr-1">
-                {medications.map((med) => (
-                  <label 
-                    key={med._id} 
-                    className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
-                      completedMeds[med._id]
-                        ? 'bg-teal-50 border-teal-150 text-teal-800 line-through opacity-70'
-                        : 'bg-white border-gray-200 text-gray-750 hover:bg-gray-50 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={!!completedMeds[med._id]}
-                        onChange={() => handleMedToggle(med._id, med.name)}
-                        className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
-                      />
-                      <div className="text-left">
-                        <span className="text-xs font-bold block">{med.name}</span>
-                        <span className="text-[10px] text-gray-400 block font-medium">{med.dosage} • {med.reminderTime}</span>
-                      </div>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            )}
-          </div>
-
-        </div>
-
+        <button
+          onClick={handleRegenerate}
+          disabled={loadingAI}
+          className="shrink-0 flex items-center gap-1.5 bg-white border-[1.5px] border-teal-600 hover:bg-teal-50 rounded-lg px-3.5 py-2 text-[13px] font-medium text-teal-600 transition-colors disabled:opacity-50"
+        >
+          <RefreshCw size={14} className={loadingAI ? 'animate-spin' : ''} />
+          Regenerate Analysis
+        </button>
       </div>
 
+      {/* 4C — Tab nav */}
+      <div className="border-b border-slate-200 flex overflow-x-auto scrollbar-none">
+        {TABS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`flex items-center gap-1.5 px-5 py-3 text-[14px] font-medium border-b-2 transition-all whitespace-nowrap ${
+              activeTab === id
+                ? 'border-teal-600 text-teal-600'
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-200'
+            }`}
+          >
+            <Icon size={14} className={activeTab === id ? 'text-teal-600' : 'text-slate-400'} />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* 4D — Tab content */}
+      <div className="flex gap-6 mt-6">
+        {/* LEFT — Tab content */}
+        <div className="flex-1 min-w-0">
+          {activeTab === 'physical' && (
+            <PhysicalHealthTab aiAdvice={aiAdvice} keepGoing={keepGoingText} loading={loadingAI} />
+          )}
+          {activeTab === 'mental' && (
+            <MentalWellnessTab aiAdvice={aiAdvice} loading={loadingAI} />
+          )}
+          {activeTab === 'nutrition' && (
+            <NutritionGuideTab aiAdvice={aiAdvice} loading={loadingAI} />
+          )}
+          {activeTab === 'lifestyle' && (
+            <LifestyleHabitsTab aiAdvice={aiAdvice} loading={loadingAI} />
+          )}
+          {activeTab === 'medication' && (
+            <MedicationsTab />
+          )}
+        </div>
+
+        {/* RIGHT — Chart + Today's Focus (always visible) */}
+        <div className="hidden xl:flex flex-col gap-4" style={{ width: 300, flexShrink: 0 }}>
+
+          {/* Health Trend Chart */}
+          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-card">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[14px] font-semibold text-slate-900">Health Trend</span>
+              <select className="bg-white border border-slate-200 rounded-md px-2.5 py-1 text-[12px] text-slate-600 outline-none cursor-pointer">
+                <option>This Week</option>
+              </select>
+            </div>
+            {loadingTrend ? (
+              <div className="h-40 skeleton rounded-lg" />
+            ) : trendData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={160}>
+                <LineChart data={trendData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                  <CartesianGrid stroke="#E2E8F0" strokeOpacity={0.1} />
+                  <XAxis
+                    dataKey="day"
+                    tick={{ fontSize: 11, fill: '#94A3B8' }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    domain={[0, 200]}
+                    ticks={[0, 50, 100, 150, 200]}
+                    tick={{ fontSize: 11, fill: '#94A3B8' }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }}
+                    formatter={(v) => [`${v} mg/dL`, 'Glucose']}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="glucose"
+                    stroke="#0D9488"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-40 flex items-center justify-center">
+                <p className="text-slate-400 text-xs">No glucose data this week</p>
+              </div>
+            )}
+            <div className="flex items-center gap-2 mt-2">
+              <div className="w-5 h-0.5 bg-teal-600 rounded" />
+              <span className="text-[11px] text-slate-500">Glucose (mg/dL)</span>
+            </div>
+          </div>
+
+          {/* Today's Focus */}
+          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-card">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-md bg-amber-50 flex items-center justify-center">
+                <Target size={16} className="text-amber-500" />
+              </div>
+              <span className="text-[14px] font-semibold text-slate-900">Today's Focus</span>
+            </div>
+            {[
+              {
+                icon: UtensilsCrossed,
+                iconBg: 'bg-teal-50',
+                iconColor: 'text-teal-600',
+                title: 'Log your meals',
+                sub: 'Stay on track with nutrition',
+              },
+              {
+                icon: Pill,
+                iconBg: 'bg-purple-50',
+                iconColor: 'text-purple-500',
+                title: 'Take your medication',
+                sub: `${meds.length} medication${meds.length !== 1 ? 's' : ''} due`,
+              },
+              {
+                icon: Zap,
+                iconBg: 'bg-amber-50',
+                iconColor: 'text-amber-500',
+                title: 'Activity goal',
+                sub: '6,000 steps • 30 mins walk',
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2.5 py-2.5 border-b border-slate-50 last:border-0 cursor-pointer hover:bg-slate-50 -mx-1 px-1 rounded-lg transition-colors"
+              >
+                <div className={`w-8 h-8 rounded-lg ${item.iconBg} flex items-center justify-center shrink-0`}>
+                  <item.icon size={15} className={item.iconColor} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-semibold text-slate-900">{item.title}</p>
+                  <p className="text-[12px] text-slate-400 mt-0.5 truncate">{item.sub}</p>
+                </div>
+                <ChevronRight size={14} className="text-slate-300 shrink-0" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 4E — Bottom metric cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-5">
+        {/* Water Intake */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-card">
+          <div className="flex items-center gap-1.5">
+            <Droplets size={15} className="text-teal-600" />
+            <span className="text-[12px] text-slate-500">Water Intake</span>
+          </div>
+          <p className="text-[20px] font-bold text-slate-900 mt-1.5">
+            {waterIntake ? `${waterIntake} / 2.5 L` : '2.1 / 2.5 L'}
+          </p>
+          <ProgressBar
+            value={waterIntake || 2.1}
+            max={2.5}
+            color="#0D9488"
+            label="84% of daily goal"
+          />
+        </div>
+
+        {/* Steps */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-card">
+          <div className="flex items-center gap-1.5">
+            <Footprints size={15} className="text-amber-500" />
+            <span className="text-[12px] text-slate-500">Steps</span>
+          </div>
+          <p className="text-[20px] font-bold text-slate-900 mt-1.5">
+            {steps ? `${steps.toLocaleString()} / 6,000` : '4,320 / 6,000'}
+          </p>
+          <ProgressBar
+            value={steps || 4320}
+            max={6000}
+            color="#F59E0B"
+            label="72% of daily goal"
+          />
+        </div>
+
+        {/* Sleep */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-card">
+          <div className="flex items-center gap-1.5">
+            <Moon size={15} className="text-purple-500" />
+            <span className="text-[12px] text-slate-500">Sleep</span>
+          </div>
+          <p className="text-[20px] font-bold text-slate-900 mt-1.5">
+            {sleep ? `${Math.floor(sleep)}h ${Math.round((sleep % 1) * 60)}m` : '6h 45m'}
+          </p>
+          <p className="text-[12px] font-medium text-green-500 mt-1">Good</p>
+        </div>
+
+        {/* Weight */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-card">
+          <div className="flex items-center gap-1.5">
+            <Weight size={15} className="text-slate-500" />
+            <span className="text-[12px] text-slate-500">Weight</span>
+          </div>
+          <p className="text-[20px] font-bold text-slate-900 mt-1.5">
+            {weight ? `${weight} kg` : '72.4 kg'}
+          </p>
+          <p className="text-[12px] font-medium text-green-500 mt-1">-1.2 kg this month</p>
+        </div>
+      </div>
     </div>
   );
 }

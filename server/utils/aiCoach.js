@@ -242,57 +242,96 @@ async function generateAdvice(userId, res) {
     let fullText = '';
 
     if (!apiKey) {
-      // Mock response for local development
-      fullText = `## Weekly Overview
-You've had a great week, ${summary.patient.name}! You stayed consistent with your logs and showed excellent commitment to your health journey.
+      // Mock response for local development (no Anthropic API key)
+      const medicationsList = summary.medications && summary.medications.length > 0
+        ? summary.medications.map(m => `- **${m.name}** — ${m.dosage}, ${m.frequency}`).join('\n')
+        : '- No active medications found. Keep up the good work!';
+
+      const patientMockReport = `## Weekly Overview
+You've had a great week, ${summary.patient.name}! You stayed consistent with your logs and showed excellent commitment to your health journey. Your dedication is truly inspiring.
 
 ## Physical Health
-Your average glucose was ${summary.weekSummary.avgGlucose || 'stable'} and your heart rate averaged ${summary.weekSummary.avgHeartRate || 'normal'} bpm. This is looking good, but let's keep it steady.
-- Take a 20-minute walk after dinner.
-- Drink at least 8 glasses of water.
-- Try to stretch for 10 minutes every morning.
-- Keep monitoring your vitals daily.
-- Avoid heavy meals late at night.
+Your average glucose was ${summary.weekSummary.avgGlucose || 'within range'} mg/dL and your heart rate averaged ${summary.weekSummary.avgHeartRate || 'normal'} bpm this week. This is looking stable, but let's keep it steady.
+
+Here are 5 action steps for next week:
+- Take a 20-minute walk after dinner — post-meal movement reduces glucose spikes.
+- Drink at least 8 glasses of water daily — hydration supports kidney function.
+- Stretch for 10 minutes every morning — improves circulation and flexibility.
+- Monitor your vitals at the same time each day for consistent readings.
+- Avoid heavy meals within 2 hours of bedtime — supports better sleep and digestion.
 
 ## Mental Wellness
-Your mood has been ${summary.weekSummary.moodTrend} with an average score of ${summary.weekSummary.avgMoodScore}.
-- Consider 10 minutes of morning sunlight.
-- Practice deep breathing exercises.
+Your mood trend this week has been **${summary.weekSummary.moodTrend}** with an average score of ${summary.weekSummary.avgMoodScore || 'N/A'} out of 10.
+
+Recommendations:
+- Spend 10 minutes in morning sunlight — proven to regulate circadian rhythm and boost serotonin.
+- Practice 4-7-8 breathing during stressful moments — inhale 4s, hold 7s, exhale 8s.
 
 ## Nutrition Guide
-- Eat more leafy greens — great for overall health.
-- Avoid highly processed sugars — can cause glucose spikes.
-- Try a protein-rich breakfast.
+**Foods to eat more of this week:**
+- Leafy greens (spinach, kale) — rich in magnesium which supports heart health.
+- Whole grains (oats, brown rice) — provide sustained energy without glucose spikes.
+- Berries — high in antioxidants that reduce inflammation.
+- Nuts and seeds — healthy fats that support brain function.
+- Legumes (lentils, chickpeas) — high in fibre and protein for satiety.
+
+**Foods to reduce or avoid:**
+- Highly processed sugars — cause rapid glucose spikes and energy crashes.
+- White bread and refined carbs — raise blood glucose quickly.
+- Excess salt — can elevate blood pressure over time.
+- Deep-fried foods — increase LDL cholesterol levels.
+
+**Meal timing tip:** Try to eat your largest meal at lunch and have a lighter dinner before 7:30pm to optimise digestion and glucose regulation overnight.
 
 ## Lifestyle & Habits
-- Sleep by 10:30pm.
-- Reduce afternoon caffeine.
-**This week's one focus:** Prioritise getting 8 hours of sleep each night.
+**Build these habits:**
+- Sleep by 10:30pm — consistent sleep timing regulates cortisol and blood pressure.
+- Take a 5-minute walk every hour if sedentary — breaks up long sitting periods.
+- Drink a glass of water first thing in the morning — kickstarts metabolism.
+
+**Habits to reduce:**
+- Reduce caffeine after 3pm — can elevate resting heart rate and disrupt sleep quality.
+- Avoid screen time 30 minutes before bed — blue light suppresses melatonin production.
+
+**This week's one focus:** **Prioritise getting 8 hours of sleep each night** — quality sleep is the single highest-impact change you can make for your overall health right now.
+
+## Medication Reminder
+Your active medications this week:
+${medicationsList}
+
+If you experience any unusual symptoms, contact your doctor before your next scheduled appointment.
 
 ## Keep Going
-You are doing an amazing job taking control of your health. Every small step you take today builds a stronger foundation for tomorrow!
+You are doing an amazing job taking control of your health, ${summary.patient.name}! Every small step you take today builds a stronger foundation for tomorrow — keep going!`;
 
----DOCTOR_BRIEF_START---
-## Clinical Summary for the Treating Physician
+      const doctorBriefMock = `## Clinical Summary for the Treating Physician
 Patient: ${summary.patient.name}, Age: ${summary.patient.age || 'N/A'}
-Patient is showing stable vitals this week.
+Conditions: ${(summary.patient.conditions || []).join(', ') || 'None listed'}
+Patient is showing stable vitals this week with no severe anomalies.
 
 ## Risk Flags
-No severe risk flags identified.
+No severe risk flags identified this week.
 
 ## Recommended Consultation Urgency
 NO IMMEDIATE ACTION NEEDED
 
----DOCTOR_BRIEF_END---`;
+## Nutrition Prescriptions to Discuss
+- Increase fibre intake via whole grains and legumes.
+- Reduce refined carbohydrate consumption.
 
-      // Send mock text in paragraph chunks, escaping newlines so SSE \n\n delimiter is not broken
-      // The frontend appends each data chunk to reportText, so we send \n as a literal token
-      const paragraphs = fullText.split('\n');
-      for (const para of paragraphs) {
-        // Send the line (could be empty for blank lines)
-        const escaped = para === '' ? '\n' : para + '\n';
-        res.write(`data: ${escaped}\n\n`);
-        await new Promise(r => setTimeout(r, 20));
+## Lifestyle Prescriptions to Discuss
+- Regular post-meal walking for glucose regulation.
+- Consistent sleep schedule targeting 8 hours.`;
+
+      // Save to DB (same as real flow)
+      fullText = patientMockReport + '\n\n---DOCTOR_BRIEF_START---\n' + doctorBriefMock + '\n---DOCTOR_BRIEF_END---';
+
+      // Stream ONLY the patient report to the frontend, line by line
+      const lines = patientMockReport.split('\n');
+      for (const line of lines) {
+        const payload = line + '\n';
+        res.write(`data: ${payload}\n\n`);
+        await new Promise(r => setTimeout(r, 18));
       }
     } else {
       const anthropic = new Anthropic({ apiKey });

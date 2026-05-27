@@ -285,10 +285,16 @@ NO IMMEDIATE ACTION NEEDED
 
 ---DOCTOR_BRIEF_END---`;
 
-      const chunks = fullText.split(' ');
-      for (const chunk of chunks) {
-        res.write(`data: ${chunk} \n\n`);
-        await new Promise(r => setTimeout(r, 50));
+      const tokens = fullText.match(/(?:[^\n]+|\n)/g); // split into lines and newlines
+      for (const token of tokens) {
+        // further split into small word chunks to simulate streaming
+        const words = token.split(/(\s+)/);
+        for (const word of words) {
+          if (word) {
+            res.write(`data: ${word}\n\n`);
+            await new Promise(r => setTimeout(r, 10));
+          }
+        }
       }
     } else {
       const anthropic = new Anthropic({ apiKey });

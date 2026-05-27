@@ -1,10 +1,11 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
-import { HeartPulse, Bell, ChevronDown, Check, CircleDot } from 'lucide-react';
+import { Bell, ChevronDown, Check, CircleDot } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import useNotifications from '../hooks/useNotifications';
+import HealAraLogo from './HealAraLogo';
 
 export default function Topbar() {
-  const { user, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { notifications, markAsRead } = useNotifications();
   const [showNotif, setShowNotif] = useState(false);
   const dropdownRef = useRef(null);
@@ -27,92 +28,176 @@ export default function Topbar() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200"
-      style={{ height: 56 }}
+      style={{
+        position: 'fixed',
+        top: 0, left: 0, right: 0,
+        height: 56,
+        background: '#FFFFFF',
+        borderBottom: '1px solid #E2E8F0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 24px',
+        zIndex: 50,
+        fontFamily: "'Inter', -apple-system, sans-serif",
+      }}
     >
-      <div className="h-full flex items-center justify-between px-6">
-        {/* Logo */}
-        <div className="flex items-center gap-2">
-          <HeartPulse size={22} className="text-teal-600" />
-          <span
-            className="text-[18px] font-bold text-slate-900"
-            style={{ letterSpacing: '-0.3px' }}
+      {/* LEFT — Logo */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <HealAraLogo size="sm" showWordmark={false} />
+        <span
+          style={{
+            fontSize: 18,
+            fontWeight: 700,
+            letterSpacing: '-0.3px',
+            lineHeight: 1,
+          }}
+        >
+          <span style={{ color: '#0F172A' }}>Heal</span>
+          <span style={{ color: '#0D9488' }}>Ara</span>
+        </span>
+      </div>
+
+      {/* RIGHT */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        {/* Bell */}
+        <div style={{ position: 'relative' }} ref={dropdownRef}>
+          <button
+            onClick={() => setShowNotif(v => !v)}
+            style={{
+              position: 'relative',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 4,
+              display: 'flex',
+              alignItems: 'center',
+              color: '#64748B',
+            }}
+            aria-label="Notifications"
           >
-            VitalTrack
-          </span>
-        </div>
-
-        {/* Right side */}
-        <div className="flex items-center gap-4">
-          {/* Bell */}
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setShowNotif(v => !v)}
-              className="relative p-1 text-slate-500 hover:text-teal-600 transition-colors"
-              aria-label="Notifications"
-            >
-              <Bell size={20} className="text-slate-500" />
-              {unreadCount > 0 && (
-                <span
-                  className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5"
-                >
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
-            </button>
-
-            {showNotif && (
-              <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-xl z-50 py-2 max-h-96 overflow-y-auto">
-                <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Notifications</span>
-                  {unreadCount > 0 && (
-                    <span className="text-[10px] px-2 py-0.5 bg-teal-50 text-teal-600 rounded-full font-semibold">
-                      {unreadCount} New
-                    </span>
-                  )}
-                </div>
-                <div className="divide-y divide-slate-50">
-                  {notifications.length === 0 ? (
-                    <div className="p-6 text-center text-slate-400 text-xs flex flex-col items-center gap-2">
-                      <CircleDot size={20} className="text-slate-300" />
-                      <span>All clear! No new notifications.</span>
-                    </div>
-                  ) : (
-                    notifications.slice(0, 10).map(n => (
-                      <div key={n._id} className="p-3 flex items-start gap-3 hover:bg-slate-50 transition-colors">
-                        <div className="h-2 w-2 rounded-full bg-teal-500 mt-1.5 shrink-0" />
-                        <div className="flex-1">
-                          <p className="text-xs text-slate-700 leading-normal">{n.message}</p>
-                          <span className="text-[9px] text-slate-400 mt-1 block">
-                            {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
-                        <button
-                          onClick={() => markAsRead(n._id)}
-                          className="p-1 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded transition-colors shrink-0"
-                          title="Mark as read"
-                        >
-                          <Check size={13} />
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
+            <Bell size={20} color="#64748B" />
+            {unreadCount > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: -6,
+                  right: -6,
+                  background: '#EF4444',
+                  color: 'white',
+                  fontSize: 10,
+                  fontWeight: 700,
+                  borderRadius: 9999,
+                  minWidth: 18,
+                  height: 18,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 4px',
+                }}
+              >
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
             )}
-          </div>
+          </button>
 
-          {/* Avatar */}
-          <div
-            className="w-[34px] h-[34px] rounded-full bg-teal-600 flex items-center justify-center text-white text-[13px] font-semibold shrink-0"
-          >
-            {initials}
-          </div>
-
-          {/* User name */}
-          <span className="text-sm font-medium text-slate-900 hidden sm:block">{user?.name}</span>
-          <ChevronDown size={16} className="text-slate-400" />
+          {showNotif && (
+            <div
+              style={{
+                position: 'absolute',
+                right: 0,
+                top: 'calc(100% + 8px)',
+                width: 320,
+                background: 'white',
+                border: '1px solid #E2E8F0',
+                borderRadius: 12,
+                boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                zIndex: 100,
+                maxHeight: 380,
+                overflowY: 'auto',
+              }}
+            >
+              <div
+                style={{
+                  padding: '10px 16px',
+                  borderBottom: '1px solid #F1F5F9',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: 1 }}>
+                  Notifications
+                </span>
+                {unreadCount > 0 && (
+                  <span style={{ fontSize: 10, background: '#F0FDFA', color: '#0D9488', borderRadius: 9999, padding: '2px 8px', fontWeight: 600 }}>
+                    {unreadCount} New
+                  </span>
+                )}
+              </div>
+              {notifications.length === 0 ? (
+                <div style={{ padding: 24, textAlign: 'center', color: '#94A3B8', fontSize: 12 }}>
+                  <CircleDot size={20} style={{ margin: '0 auto 8px', display: 'block', color: '#CBD5E1' }} />
+                  All clear! No new notifications.
+                </div>
+              ) : (
+                notifications.slice(0, 10).map(n => (
+                  <div
+                    key={n._id}
+                    style={{
+                      padding: '10px 14px',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 10,
+                      borderBottom: '1px solid #F8FAFC',
+                    }}
+                  >
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#0D9488', marginTop: 5, flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: 12, color: '#374151', lineHeight: 1.5, margin: 0 }}>{n.message}</p>
+                      <span style={{ fontSize: 10, color: '#94A3B8', marginTop: 2, display: 'block' }}>
+                        {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => markAsRead(n._id)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: 2 }}
+                      title="Mark as read"
+                    >
+                      <Check size={13} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
+
+        {/* Avatar */}
+        <div
+          style={{
+            width: 34,
+            height: 34,
+            borderRadius: '50%',
+            background: '#0D9488',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: 13,
+            fontWeight: 600,
+            flexShrink: 0,
+          }}
+        >
+          {initials}
+        </div>
+
+        {/* Name */}
+        <span style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
+          {user?.name}
+        </span>
+
+        <ChevronDown size={16} color="#94A3B8" />
       </div>
     </header>
   );

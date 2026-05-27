@@ -18,7 +18,7 @@ function generateWeeklyReport(res, patient, logs, medications, alerts, aiAdvice 
 
   // 1. Header Band
   doc.rect(0, 0, 595.28, 120).fill(primaryColor);
-  doc.fillColor('#ffffff').fontSize(24).font('Helvetica-Bold').text('VITALTRACK', 40, 30);
+  doc.fillColor('#ffffff').fontSize(24).font('Helvetica-Bold').text('HEALARA', 40, 30);
   doc.fontSize(14).font('Helvetica').text('Weekly Community Health Report', 40, 60);
 
   // Date Range (7 Days)
@@ -261,7 +261,7 @@ function generateDoctorBriefPDF(res, patient, brief, urgency, logs, medications,
   drawPageBorder();
   doc.rect(20, 20, 555.28, 15).fill(primaryColor);
 
-  doc.fillColor('#111827').fontSize(28).font('Helvetica-Bold').text('VITALTRACK', 40, 150);
+  doc.fillColor('#111827').fontSize(28).font('Helvetica-Bold').text('HEALARA', 40, 150);
   doc.fontSize(18).fillColor(primaryColor).font('Helvetica-Bold').text('Weekly Clinical Doctor Brief', 40, 190);
   doc.rect(40, 225, 150, 4).fill(primaryColor);
 

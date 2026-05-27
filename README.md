@@ -19,7 +19,7 @@ HealAra is a data-driven health intelligence platform designed to help patients 
 ## 📂 Project Structure
 
 ```
-vitaltrack/
+healara/
 ├── client/                        # React + Vite frontend
 │   ├── src/
 │   │   ├── api/                   # axios instance configuration
@@ -51,7 +51,7 @@ Ensure you have **Node.js (v18 or higher)** and a running **MongoDB server** (lo
 ### 2. Set Up Environment Variables
 Create a `.env` file in the project root with:
 ```env
-MONGODB_URI=mongodb://127.0.0.1:27017/vitaltrack
+MONGODB_URI=mongodb://127.0.0.1:27017/healara
 JWT_SECRET=your_super_secret_key_here
 JWT_EXPIRES_IN=7d
 PORT=5000
@@ -61,7 +61,7 @@ If you are using MongoDB Atlas, replace `MONGODB_URI` with your connection strin
 ### 3. Install Dependencies
 Install all package dependencies:
 ```bash
-# In the project root (vitaltrack/):
+# In the project root (healara/):
 npm install
 
 # In the client directory:

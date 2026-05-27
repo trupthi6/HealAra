@@ -4,7 +4,7 @@ const HealthLog = require('../models/HealthLog');
 const Medication = require('../models/Medication');
 const Alert = require('../models/Alert');
 
-const SYSTEM_PROMPT = `You are VitalTrack AI, a compassionate 360° health coach. You will receive a patient's 7-day health summary as JSON.
+const SYSTEM_PROMPT = `You are HealAra AI, a compassionate 360° health coach. You will receive a patient's 7-day health summary as JSON.
 
 Generate a complete health report in two parts.
 

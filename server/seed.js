@@ -9,8 +9,7 @@ const Medication = require('./models/Medication');
 const Alert = require('./models/Alert');
 const Notification = require('./models/Notification');
 const AuditLog = require('./models/AuditLog');
-
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/vitaltrack';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/healara';
 
 async function seedDB() {
   try {

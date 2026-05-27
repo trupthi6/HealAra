@@ -1,7 +1,7 @@
 {
-  "name": "vitaltrack-server",
+  "name": "healara-server",
   "version": "1.0.0",
-  "description": "VitalTrack backend server",
+  "description": "HealAra backend server",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {

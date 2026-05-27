@@ -285,16 +285,14 @@ NO IMMEDIATE ACTION NEEDED
 
 ---DOCTOR_BRIEF_END---`;
 
-      const tokens = fullText.match(/(?:[^\n]+|\n)/g); // split into lines and newlines
-      for (const token of tokens) {
-        // further split into small word chunks to simulate streaming
-        const words = token.split(/(\s+)/);
-        for (const word of words) {
-          if (word) {
-            res.write(`data: ${word}\n\n`);
-            await new Promise(r => setTimeout(r, 10));
-          }
-        }
+      // Send mock text in paragraph chunks, escaping newlines so SSE \n\n delimiter is not broken
+      // The frontend appends each data chunk to reportText, so we send \n as a literal token
+      const paragraphs = fullText.split('\n');
+      for (const para of paragraphs) {
+        // Send the line (could be empty for blank lines)
+        const escaped = para === '' ? '\n' : para + '\n';
+        res.write(`data: ${escaped}\n\n`);
+        await new Promise(r => setTimeout(r, 20));
       }
     } else {
       const anthropic = new Anthropic({ apiKey });

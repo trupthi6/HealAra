@@ -50,22 +50,10 @@ const Skeleton = ({ h = 'h-4', w = 'w-full' }) => (
   <div className={`${h} ${w} skeleton rounded`} />
 );
 
-const TABS = [
-  { id: 'physical',   label: 'Physical Health',   icon: Activity   },
-  { id: 'mental',     label: 'Mental Wellness',    icon: Brain      },
-  { id: 'nutrition',  label: 'Nutrition Guide',    icon: Leaf       },
-  { id: 'lifestyle',  label: 'Lifestyle & Habits', icon: TrendingUp },
-  { id: 'medication', label: 'Medications',        icon: Pill       },
-];
-
 export default function Dashboard() {
   const { user, token } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('physical');
-  const [trendData, setTrendData] = useState([]);
-  const [loadingTrend, setLoadingTrend] = useState(true);
-  const [meds, setMeds] = useState([]);
   const [latestLog, setLatestLog] = useState(null);
   const [aiAdvice, setAiAdvice] = useState(user?.aiAdvice || '');
   const [loadingAI, setLoadingAI] = useState(!user?.aiAdvice);
@@ -88,32 +76,6 @@ export default function Dashboard() {
       })
       .catch(() => {})
       .finally(() => setLoadingAI(false));
-  }, []);
-
-  /* ── Load trend chart ── */
-  useEffect(() => {
-    api.get('/trends/vitals?field=glucose&period=week')
-      .then(res => {
-        const raw = res.data?.data || res.data?.vitals || [];
-        const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        const formatted = raw.map((d, i) => ({
-          day: dayLabels[i] || `D${i + 1}`,
-          glucose: Math.round(d.avg || d.value || 0),
-        })).filter(d => d.glucose > 0);
-        setTrendData(formatted);
-      })
-      .catch(() => {})
-      .finally(() => setLoadingTrend(false));
-  }, []);
-
-  /* ── Load medications ── */
-  useEffect(() => {
-    api.get('/medications')
-      .then(res => {
-        const data = res.data?.medications || res.data?.data || [];
-        setMeds(data.filter(m => m.active));
-      })
-      .catch(() => {});
   }, []);
 
   /* ── Load latest log for bottom cards ── */
@@ -221,7 +183,7 @@ export default function Dashboard() {
                 onClick={() => navigate('/advisor')}
                 className="shrink-0 text-[13px] font-medium text-teal-600 hover:underline"
               >
-                Generate Report →
+                Generate Report &rarr;
               </button>
             </div>
           )}
@@ -234,148 +196,6 @@ export default function Dashboard() {
           <RefreshCw size={14} className={loadingAI ? 'animate-spin' : ''} />
           Regenerate Analysis
         </button>
-      </div>
-
-      {/* 4C — Tab nav */}
-      <div className="border-b border-slate-200 flex overflow-x-auto scrollbar-none">
-        {TABS.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => setActiveTab(id)}
-            className={`flex items-center gap-1.5 px-5 py-3 text-[14px] font-medium border-b-2 transition-all whitespace-nowrap ${
-              activeTab === id
-                ? 'border-teal-600 text-teal-600'
-                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-200'
-            }`}
-          >
-            <Icon size={14} className={activeTab === id ? 'text-teal-600' : 'text-slate-400'} />
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* 4D — Tab content */}
-      <div className="flex gap-6 mt-6">
-        {/* LEFT — Tab content */}
-        <div className="flex-1 min-w-0">
-          {activeTab === 'physical' && (
-            <PhysicalHealthTab aiAdvice={aiAdvice} keepGoing={keepGoingText} loading={loadingAI} />
-          )}
-          {activeTab === 'mental' && (
-            <MentalWellnessTab aiAdvice={aiAdvice} loading={loadingAI} />
-          )}
-          {activeTab === 'nutrition' && (
-            <NutritionGuideTab aiAdvice={aiAdvice} loading={loadingAI} />
-          )}
-          {activeTab === 'lifestyle' && (
-            <LifestyleHabitsTab aiAdvice={aiAdvice} loading={loadingAI} />
-          )}
-          {activeTab === 'medication' && (
-            <MedicationsTab />
-          )}
-        </div>
-
-        {/* RIGHT — Chart + Today's Focus (always visible) */}
-        <div className="hidden xl:flex flex-col gap-4" style={{ width: 300, flexShrink: 0 }}>
-
-          {/* Health Trend Chart */}
-          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-card">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[14px] font-semibold text-slate-900">Health Trend</span>
-              <select className="bg-white border border-slate-200 rounded-md px-2.5 py-1 text-[12px] text-slate-600 outline-none cursor-pointer">
-                <option>This Week</option>
-              </select>
-            </div>
-            {loadingTrend ? (
-              <div className="h-40 skeleton rounded-lg" />
-            ) : trendData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={160}>
-                <LineChart data={trendData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-                  <CartesianGrid stroke="#E2E8F0" strokeOpacity={0.1} />
-                  <XAxis
-                    dataKey="day"
-                    tick={{ fontSize: 11, fill: '#94A3B8' }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    domain={[0, 200]}
-                    ticks={[0, 50, 100, 150, 200]}
-                    tick={{ fontSize: 11, fill: '#94A3B8' }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }}
-                    formatter={(v) => [`${v} mg/dL`, 'Glucose']}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="glucose"
-                    stroke="#0D9488"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-40 flex items-center justify-center">
-                <p className="text-slate-400 text-xs">No glucose data this week</p>
-              </div>
-            )}
-            <div className="flex items-center gap-2 mt-2">
-              <div className="w-5 h-0.5 bg-teal-600 rounded" />
-              <span className="text-[11px] text-slate-500">Glucose (mg/dL)</span>
-            </div>
-          </div>
-
-          {/* Today's Focus */}
-          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-card">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-md bg-amber-50 flex items-center justify-center">
-                <Target size={16} className="text-amber-500" />
-              </div>
-              <span className="text-[14px] font-semibold text-slate-900">Today's Focus</span>
-            </div>
-            {[
-              {
-                icon: UtensilsCrossed,
-                iconBg: 'bg-teal-50',
-                iconColor: 'text-teal-600',
-                title: 'Log your meals',
-                sub: 'Stay on track with nutrition',
-              },
-              {
-                icon: Pill,
-                iconBg: 'bg-purple-50',
-                iconColor: 'text-purple-500',
-                title: 'Take your medication',
-                sub: `${meds.length} medication${meds.length !== 1 ? 's' : ''} due`,
-              },
-              {
-                icon: Zap,
-                iconBg: 'bg-amber-50',
-                iconColor: 'text-amber-500',
-                title: 'Activity goal',
-                sub: '6,000 steps • 30 mins walk',
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-2.5 py-2.5 border-b border-slate-50 last:border-0 cursor-pointer hover:bg-slate-50 -mx-1 px-1 rounded-lg transition-colors"
-              >
-                <div className={`w-8 h-8 rounded-lg ${item.iconBg} flex items-center justify-center shrink-0`}>
-                  <item.icon size={15} className={item.iconColor} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-semibold text-slate-900">{item.title}</p>
-                  <p className="text-[12px] text-slate-400 mt-0.5 truncate">{item.sub}</p>
-                </div>
-                <ChevronRight size={14} className="text-slate-300 shrink-0" />
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* 4E — Bottom metric cards */}

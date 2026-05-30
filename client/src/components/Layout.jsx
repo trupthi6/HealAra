@@ -113,7 +113,7 @@ export default function Layout() {
         {/* Dynamic Nested Content & MiddlePanel */}
         <div className="flex-1 flex min-h-0 overflow-hidden">
           {/* Main content scroll area */}
-          <main className="flex-1 overflow-y-auto px-8 xl:px-12 py-8 max-w-[1400px] w-full mx-auto">
+          <main className="flex-1 min-w-0 overflow-y-auto px-8 xl:px-12 py-8 max-w-[1400px] w-full mx-auto">
             <Outlet />
           </main>
 

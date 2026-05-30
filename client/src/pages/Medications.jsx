@@ -118,16 +118,16 @@ export default function Medications() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-6xl w-full mx-auto py-4">
       {/* Top Banner Header */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 leading-tight">Medications</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage active prescriptions and customize reminder schedules.</p>
+          <h1 className="text-[28px] font-bold text-gray-900 tracking-tight leading-none">Medications</h1>
+          <p className="text-[14px] text-gray-500 mt-2 font-medium">Manage active prescriptions and customize reminder schedules.</p>
         </div>
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm px-4 py-2.5 rounded-lg shadow-sm transition-all"
+          className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-[14px] px-4 py-2.5 rounded-lg shadow-[0_2px_8px_rgba(13,148,136,0.2)] transition-premium shrink-0 hover:-translate-y-[1px]"
         >
           <Plus className="h-4.5 w-4.5" />
           Add Prescription
@@ -137,12 +137,12 @@ export default function Medications() {
       {/* Grid of Medications */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="h-44 bg-white border border-gray-100 rounded-xl animate-shimmer"></div>
-          <div className="h-44 bg-white border border-gray-100 rounded-xl animate-shimmer"></div>
-          <div className="h-44 bg-white border border-gray-100 rounded-xl animate-shimmer"></div>
+          <div className="h-44 bg-surface-l1 rounded-xl animate-shimmer"></div>
+          <div className="h-44 bg-surface-l1 rounded-xl animate-shimmer"></div>
+          <div className="h-44 bg-surface-l1 rounded-xl animate-shimmer"></div>
         </div>
       ) : medications.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-150 p-12 text-center flex flex-col items-center justify-center max-w-xl mx-auto shadow-sm">
+        <div className="bg-surface-l1 rounded-xl border border-gray-150 p-12 text-center flex flex-col items-center justify-center max-w-xl mx-auto shadow-sm">
           <Pill className="h-10 w-10 text-teal-600 mb-3" />
           <h3 className="font-bold text-gray-800 text-base">No active prescriptions</h3>
           <p className="text-xs text-gray-500 mt-1 mb-6">Schedule your first medication dosage to get reminders and logs.</p>
@@ -170,49 +170,49 @@ export default function Medications() {
       {/* Add/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fadeIn">
-          <div className="bg-white rounded-xl border border-gray-100 shadow-xl max-w-md w-full overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50">
-              <h3 className="font-bold text-sm text-gray-800 uppercase tracking-wider">
+          <div className="bg-surface-elevated rounded-xl border border-gray-100 shadow-xl max-w-md w-full overflow-hidden transition-premium">
+            <div className="flex items-center justify-between px-6 py-4.5 border-b border-gray-100 bg-gray-50/50">
+              <h3 className="font-bold text-[14px] text-gray-800 uppercase tracking-wider">
                 {editingMed ? 'Edit Medication' : 'Add New Prescription'}
               </h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-gray-650 hover:bg-gray-100 p-1 rounded-lg"
+                className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-1.5 rounded-lg transition-premium"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-5 space-y-4">
+            <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Medication Name</label>
+                <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Medication Name</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-[14px] focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-premium shadow-sm bg-gray-50/50 focus:bg-white"
                   placeholder="e.g. Metformin"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Dosage</label>
+                <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Dosage</label>
                 <input
                   type="text"
                   value={dosage}
                   onChange={(e) => setDosage(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-[14px] focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-premium shadow-sm bg-gray-50/50 focus:bg-white"
                   placeholder="e.g. 500mg"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Frequency</label>
+                <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Frequency</label>
                 <select
                   value={frequency}
                   onChange={(e) => setFrequency(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-white"
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-[14px] focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-premium shadow-sm bg-gray-50/50 focus:bg-white"
                 >
                   <option value="daily">Once Daily</option>
                   <option value="twice_daily">Twice Daily</option>
@@ -223,38 +223,38 @@ export default function Medications() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Start Date</label>
+                  <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Start Date</label>
                   <input
                     type="date"
                     required
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-[14px] focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-premium bg-gray-50/50 focus:bg-white shadow-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Reminder Time</label>
+                  <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Reminder Time</label>
                   <input
                     type="time"
                     required
                     value={reminderTime}
                     onChange={(e) => setReminderTime(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-[14px] focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-premium bg-gray-50/50 focus:bg-white shadow-sm"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-50">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-gray-200 text-gray-500 font-semibold text-xs rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4.5 py-2.5 border border-gray-200 text-gray-500 font-semibold text-[13px] rounded-lg hover:bg-gray-50 transition-premium hover:-translate-y-[1px]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+                  className="px-4.5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-[13px] rounded-lg shadow-[0_2px_8px_rgba(13,148,136,0.25)] transition-premium hover:-translate-y-[1px]"
                 >
                   {editingMed ? 'Save Changes' : 'Schedule Medication'}
                 </button>

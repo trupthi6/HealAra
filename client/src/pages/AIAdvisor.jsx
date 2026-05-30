@@ -256,20 +256,20 @@ export default function AIAdvisor() {
     const parts = reportText.split(/(?=## )/);
     parts.forEach(part => {
       const trimmed = part.trim();
-      if (trimmed.startsWith('## Weekly Overview')) {
-        sections.overview = trimmed.replace('## Weekly Overview', '').trim();
-      } else if (trimmed.startsWith('## Physical Health')) {
-        sections.physical = trimmed;
-      } else if (trimmed.startsWith('## Mental Wellness')) {
+      if (trimmed.startsWith('## Weekly Overview') || trimmed.startsWith('## Key Observations') || trimmed.startsWith('## AI Clinical Insight')) {
+        sections.overview = trimmed.replace(/^##\s*(Weekly Overview|Key Observations|AI Clinical Insight)/i, '').trim();
+      } else if (trimmed.startsWith('## Physical Health') || trimmed.startsWith('## Health Pattern Interpretation') || trimmed.startsWith('## Physical Wellness Strategy') || trimmed.startsWith('## Physical Optimization Strategy')) {
+        sections.physical = (sections.physical ? sections.physical + '\n\n' : '') + trimmed;
+      } else if (trimmed.startsWith('## Mental Wellness') || trimmed.startsWith('## Mental & Emotional Guidance') || trimmed.startsWith('## Mental & Emotional Wellness')) {
         sections.mental = trimmed;
-      } else if (trimmed.startsWith('## Nutrition Guide')) {
+      } else if (trimmed.startsWith('## Nutrition Guide') || trimmed.startsWith('## Nutrition Optimization')) {
         sections.nutrition = trimmed;
-      } else if (trimmed.startsWith('## Lifestyle & Habits') || trimmed.startsWith('## Lifestyle')) {
+      } else if (trimmed.startsWith('## Lifestyle & Habits') || trimmed.startsWith('## Lifestyle Adjustments') || trimmed.startsWith('## Lifestyle') || trimmed.startsWith('## Lifestyle & Recovery Guidance')) {
         sections.lifestyle = trimmed;
-      } else if (trimmed.startsWith('## Medication Reminder') || trimmed.startsWith('## Medication')) {
+      } else if (trimmed.startsWith('## Medication Reminder') || trimmed.startsWith('## Medication') || trimmed.startsWith('## Preventive Focus')) {
         sections.medication = trimmed;
-      } else if (trimmed.startsWith('## Keep Going')) {
-        sections.keepGoing = trimmed.replace('## Keep Going', '').trim();
+      } else if (trimmed.startsWith('## Keep Going') || trimmed.startsWith('## Encouraging Summary') || trimmed.startsWith('## Encouraging Closing Insight')) {
+        sections.keepGoing = trimmed.replace(/^##\s*(Keep Going|Encouraging Summary|Encouraging Closing Insight)/i, '').trim();
       }
     });
 
@@ -395,22 +395,22 @@ export default function AIAdvisor() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-6xl w-full mx-auto py-4">
       
       {/* Page Title Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Brain className="h-7 w-7 text-teal-600 animate-pulse" /> 360° AI Health Advisor
+      <div className="pb-2">
+        <h1 className="text-[28px] font-bold text-gray-900 flex items-center gap-2.5 tracking-tight leading-none">
+          <Brain className="h-8 w-8 text-teal-600 animate-pulse" /> 360° AI Health Advisor
         </h1>
-        <p className="text-xs text-gray-500 mt-1">Tailored physical, mental, and nutritional advice powered by Claude</p>
+        <p className="text-[14px] text-gray-500 mt-2 font-medium">Tailored physical, mental, and nutritional advice powered by Claude</p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
         
         {/* ========================================================
             LEFT COLUMN PANEL: WEEKLY SNAPSHOT
             ======================================================== */}
-        <div className="w-full lg:w-72 shrink-0 space-y-4 bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+        <div className="w-full lg:w-72 shrink-0 space-y-4 bg-surface-l1 rounded-xl p-6 transition-premium hover:-translate-y-[1px]">
           <h2 className="font-bold text-xs text-gray-500 uppercase tracking-wider border-b pb-2 flex items-center justify-between">
             This Week's Snapshot
             {loadingSnapshot && <Loader2 className="h-3 w-3 text-teal-600 animate-spin" />}
@@ -424,10 +424,10 @@ export default function AIAdvisor() {
               ))}
             </div>
           ) : snapshot ? (
-            <div className="space-y-4 divide-y divide-gray-50">
+            <div className="space-y-4 divide-y divide-gray-100">
               
               {/* Avg Glucose Card */}
-              <div className="pt-3 first:pt-0">
+              <div className="card border-l-4 border-teal-500 pl-3 pt-3 mb-4">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Avg Glucose</span>
                 <div className="flex items-end justify-between mt-1">
                   <span className="text-base font-bold text-gray-900">
@@ -455,7 +455,7 @@ export default function AIAdvisor() {
               </div>
 
               {/* Blood Pressure Card */}
-              <div className="pt-3">
+              <div className="card border-l-4 border-indigo-500 pl-3 pt-3 mb-4">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Avg Blood Pressure</span>
                 <span className="text-base font-bold text-gray-900 mt-1 block">
                   {snapshot.avgBpSystolic && snapshot.avgBpDiastolic 
@@ -496,13 +496,13 @@ export default function AIAdvisor() {
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Logging Streak</span>
                 <div className="flex items-center gap-1.5 mt-1">
                   <Flame className="h-5 w-5 text-orange-500 fill-orange-500 shrink-0" />
-                  <span className="text-base font-bold text-gray-900">{snapshot.streak} Days Logged</span>
+                  <span className="text-base font-bold text-gray-900">{snapshot.streak > 0 ? `${snapshot.streak} Days Logged` : 'Start Logging!'}</span>
                 </div>
               </div>
 
               {/* Top Symptoms Tags */}
               <div className="pt-3">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Symptoms This Week</span>
+                <span className="text-sm font-bold text-gray-400 uppercase tracking-wider block">Symptoms This Week</span>
                 <div className="flex flex-wrap gap-1 mt-1.5">
                   {snapshot.topSymptoms && snapshot.topSymptoms.length > 0 ? (
                     snapshot.topSymptoms.map(sym => (
@@ -518,7 +518,7 @@ export default function AIAdvisor() {
 
               {/* Prescriptions Count */}
               <div className="pt-3">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Active Medications</span>
+                <span className="text-sm font-bold text-gray-400 uppercase tracking-wider block">Active Medications</span>
                 <span className="text-base font-bold text-gray-900 mt-1 block">
                   {snapshot.activeMedicationsCount || 0} Prescriptions
                 </span>
@@ -533,37 +533,38 @@ export default function AIAdvisor() {
         {/* ========================================================
             RIGHT COLUMN PANEL: REPORT GENERATOR & VIEWER
             ======================================================== */}
-        <div className="flex-1 w-full bg-white border border-gray-100 rounded-xl p-6 shadow-sm min-w-0 space-y-4">
-          
-          {/* Header Row */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4">
-            <div className="flex items-center gap-2">
-              <Brain className="h-5.5 w-5.5 text-teal-600" />
+        <div className="flex-1 w-full min-w-0 flex flex-col gap-0 rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+
+          {/* ── HEADER ROW (white bg) ── */}
+          <div className="flex items-center justify-between gap-3 bg-white border-b border-[#e5e7eb] px-5 py-4">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-lg bg-[#E1F5EE] flex items-center justify-center shrink-0">
+                <Brain className="h-5 w-5 text-[#0F6E56]" />
+              </div>
               <div>
-                <h3 className="font-bold text-sm text-gray-800 uppercase tracking-wider">Weekly Health Analysis</h3>
+                <h3 className="font-bold text-[15px] text-[#1a1a1a] leading-tight">Weekly health analysis</h3>
                 {isCached && cachedTime && (
-                  <span className="text-[10px] text-gray-400 block font-semibold mt-0.5">
-                    Generated {Math.max(0, Math.round((new Date() - cachedTime) / (60 * 60 * 1000)))}h ago (24h cache active)
+                  <span className="text-[11px] text-[#6b7280] block mt-0.5">
+                    Generated {Math.max(0, Math.round((new Date() - cachedTime) / (60 * 60 * 1000)))}h ago · 24h cache active
                   </span>
                 )}
               </div>
             </div>
 
-            <div className="flex gap-2 self-stretch sm:self-auto">
+            <div className="flex gap-2 shrink-0">
               {isCached && reportText && (
                 <button
                   onClick={() => triggerGenerateAdvice(true)}
                   disabled={streaming}
-                  className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 border rounded-lg text-xs font-semibold text-teal-600 border-teal-150 hover:bg-teal-50/30 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-2 border border-[#0F6E56] rounded-lg text-[13px] font-semibold text-[#0F6E56] bg-white hover:bg-[#F0FAF7] transition-colors disabled:opacity-50"
                 >
                   <RefreshCw className={`h-3.5 w-3.5 ${streaming ? 'animate-spin' : ''}`} /> Regenerate
                 </button>
               )}
-
               {!reportText && !streaming && errorState !== 'insufficient_data' && (
                 <button
                   onClick={() => triggerGenerateAdvice(false)}
-                  className="w-full sm:w-auto px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-colors shadow-sm"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-[13px] font-semibold transition-colors shadow-sm"
                 >
                   Generate AI advice
                 </button>
@@ -571,395 +572,363 @@ export default function AIAdvisor() {
             </div>
           </div>
 
-          {/* Clinician Annotation Banner (if doctor left a note) */}
-          {showAnnotation && (user?.doctorAnnotation || user?.prevDoctorAnnotation) && (
-            <div className={`p-4 border-l-4 rounded-r-xl flex items-start justify-between ${
-              user.doctorAnnotation ? 'border-teal-500 bg-teal-50/20' : 'border-gray-350 bg-gray-50/40'
-            }`}>
-              <div className="space-y-1">
-                <h4 className={`text-[10px] font-bold uppercase tracking-wider ${
-                  user.doctorAnnotation ? 'text-teal-800' : 'text-gray-500'
-                }`}>
-                  {user.doctorAnnotation 
-                    ? `Message from Dr. ${user.doctorAnnotationBy || 'Doctor'}` 
-                    : 'Note from a previous report'
-                  }
-                </h4>
-                <p className="text-xs text-gray-800 leading-normal italic">
-                  "{user.doctorAnnotation || user.prevDoctorAnnotation}"
-                </p>
-              </div>
-              <button
-                onClick={() => setShowAnnotation(false)}
-                className="text-gray-400 hover:text-gray-600 shrink-0 ml-4 hover:bg-gray-100 p-0.5 rounded"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          )}
+          {/* ── BODY (white bg) ── */}
+          <div className="flex-1 bg-white px-5 py-5 space-y-5">
 
-          {/* ========================================================
-              DISPLAY VIEWS BASED ON REPORT ADVICE STATE
-              ======================================================== */}
-          
-          {/* STREAMING / GENERATING STATE VIEW */}
-          {streaming && (
-            <div className="py-12 flex flex-col items-center justify-center gap-4 text-center">
-              <div className="flex gap-1.5 h-3 items-center">
-                <div className="h-2.5 w-2.5 bg-teal-600 rounded-full animate-bounce delay-75"></div>
-                <div className="h-2.5 w-2.5 bg-teal-600 rounded-full animate-bounce delay-150"></div>
-                <div className="h-2.5 w-2.5 bg-teal-600 rounded-full animate-bounce delay-200"></div>
+            {/* Doctor annotation banner */}
+            {showAnnotation && (user?.doctorAnnotation || user?.prevDoctorAnnotation) && (
+              <div className={`p-4 border-l-4 rounded-r-xl flex items-start justify-between ${
+                user.doctorAnnotation ? 'border-teal-500 bg-teal-50/30' : 'border-gray-300 bg-gray-50/50'
+              }`}>
+                <div className="space-y-1">
+                  <h4 className={`text-[10px] font-bold uppercase tracking-wider ${
+                    user.doctorAnnotation ? 'text-teal-800' : 'text-gray-500'
+                  }`}>
+                    {user.doctorAnnotation
+                      ? `Message from Dr. ${user.doctorAnnotationBy || 'Doctor'}`
+                      : 'Note from a previous report'}
+                  </h4>
+                  <p className="text-xs text-gray-800 leading-normal italic">
+                    "{user.doctorAnnotation || user.prevDoctorAnnotation}"
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowAnnotation(false)}
+                  className="text-gray-400 hover:text-gray-600 shrink-0 ml-4 hover:bg-gray-100 p-0.5 rounded"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
-              <div>
-                <p className="font-bold text-sm text-gray-700">Analysing your last 7 days...</p>
-                <p className="text-xs text-gray-400 mt-1">Reviewing vitals thresholds, daily logs, and nutrition preferences</p>
-              </div>
-              <button
-                onClick={cancelGeneration}
-                className="px-4 py-1.5 border border-gray-300 hover:bg-gray-50 text-gray-600 rounded-lg text-xs font-bold transition-colors"
-              >
-                Cancel Generation
-              </button>
-            </div>
-          )}
+            )}
 
-          {/* ERROR / INSUFFICIENT DATA STATES */}
-          {!streaming && errorState === 'insufficient_data' && (
-            <div className="py-12 flex flex-col items-center justify-center gap-4 text-center max-w-sm mx-auto">
-              <AlertCircle className="h-10 w-10 text-amber-500 shrink-0" />
-              <div>
-                <p className="font-bold text-sm text-gray-700">Insufficient Vitals History</p>
-                <p className="text-xs text-gray-400 mt-1.5 leading-normal">
-                  You need to record vitals for at least 3 days in the past week to unlock Claude's AI clinical summaries and coach reports.
-                </p>
-              </div>
-              <button
-                onClick={() => navigate('/log')}
-                className="inline-flex items-center gap-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-colors"
-              >
-                Log Vitals Now <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-
-          {!streaming && errorState === 'api_failure' && (
-            <div className="py-12 flex flex-col items-center justify-center gap-4 text-center max-w-sm mx-auto">
-              <AlertTriangle className="h-10 w-10 text-red-500 shrink-0" />
-              <div>
-                <p className="font-bold text-sm text-gray-700">Service Temporarily Unavailable</p>
-                <p className="text-xs text-gray-400 mt-1.5 leading-normal">
-                  Your AI advisor is temporarily unavailable. Please try again in a few minutes.
-                </p>
-              </div>
-              <button
-                onClick={() => triggerGenerateAdvice(false)}
-                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 mx-auto shadow-xs"
-              >
-                <RefreshCw className="h-4 w-4" /> Retry
-              </button>
-            </div>
-          )}
-
-          {/* STREAM INTERRUPTED / PARTIAL OUTPUT WARN BANNER */}
-          {!streaming && errorState === 'interrupted' && reportText && (
-            <div className="p-4 border-l-4 border-amber-500 bg-amber-50/20 rounded-r-xl flex items-start justify-between">
-              <div className="flex gap-2">
-                <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+            {/* ── STREAMING STATE ── */}
+            {streaming && (
+              <div className="py-12 flex flex-col items-center justify-center gap-4 text-center">
+                <div className="flex gap-1.5 h-3 items-center">
+                  <div className="h-2.5 w-2.5 bg-teal-600 rounded-full animate-bounce delay-75"></div>
+                  <div className="h-2.5 w-2.5 bg-teal-600 rounded-full animate-bounce delay-150"></div>
+                  <div className="h-2.5 w-2.5 bg-teal-600 rounded-full animate-bounce delay-200"></div>
+                </div>
                 <div>
-                  <p className="text-xs font-bold text-amber-800 uppercase tracking-wider">Incomplete Generation</p>
-                  <p className="text-xs text-gray-700 mt-0.5 leading-normal">
-                    This report may be incomplete — tap Regenerate for a fresh analysis.
+                  <p className="font-bold text-sm text-gray-700">Analysing your last 7 days...</p>
+                  <p className="text-xs text-gray-400 mt-1">Reviewing vitals thresholds, daily logs, and nutrition preferences</p>
+                </div>
+                <button
+                  onClick={cancelGeneration}
+                  className="px-4 py-1.5 border border-gray-300 hover:bg-gray-50 text-gray-600 rounded-lg text-xs font-bold transition-colors"
+                >
+                  Cancel Generation
+                </button>
+              </div>
+            )}
+
+            {/* ── ERROR STATES ── */}
+            {!streaming && errorState === 'insufficient_data' && (
+              <div className="py-12 flex flex-col items-center justify-center gap-4 text-center max-w-sm mx-auto">
+                <AlertCircle className="h-10 w-10 text-amber-500 shrink-0" />
+                <div>
+                  <p className="font-bold text-sm text-gray-700">Insufficient Vitals History</p>
+                  <p className="text-xs text-gray-400 mt-1.5 leading-normal">
+                    You need to record vitals for at least 3 days in the past week to unlock Claude's AI clinical summaries.
                   </p>
                 </div>
+                <button
+                  onClick={() => navigate('/log')}
+                  className="inline-flex items-center gap-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-colors"
+                >
+                  Log Vitals Now <ArrowRight className="h-4 w-4" />
+                </button>
               </div>
-              <button
-                onClick={() => setErrorState(null)}
-                className="text-amber-500 hover:text-amber-700 shrink-0 font-bold text-[10px] uppercase border border-amber-200 px-2 py-0.5 rounded hover:bg-amber-100/30"
-              >
-                Dismiss
-              </button>
-            </div>
-          )}
+            )}
 
-          {/* COMPLETED REPORT AND METRIC VIEWS */}
-          {reportText && (
-            <div className="space-y-6">
-              
-              {/* Warm Summary Section */}
-              {parsedSections.overview && (
-                <div className="p-4 bg-teal-50/10 border border-teal-50 rounded-xl">
-                  <p className="text-sm text-gray-800 leading-relaxed font-medium italic">
-                    "{parsedSections.overview}"
+            {!streaming && errorState === 'api_failure' && (
+              <div className="py-12 flex flex-col items-center justify-center gap-4 text-center max-w-sm mx-auto">
+                <AlertTriangle className="h-10 w-10 text-red-500 shrink-0" />
+                <div>
+                  <p className="font-bold text-sm text-gray-700">Service Temporarily Unavailable</p>
+                  <p className="text-xs text-gray-400 mt-1.5 leading-normal">
+                    Your AI advisor is temporarily unavailable. Please try again in a few minutes.
                   </p>
                 </div>
-              )}
-
-              {/* Tabs Switcher for Sections */}
-              <div className="border-b flex overflow-x-auto gap-2 scrollbar-none">
-                {[
-                  { id: 'physical', label: 'Physical Health', icon: Activity },
-                  { id: 'mental', label: 'Mental Wellness', icon: Smile },
-                  { id: 'nutrition', label: 'Nutrition Guide', icon: Brain },
-                  { id: 'lifestyle', label: 'Lifestyle & Habits', icon: TrendingUp },
-                  { id: 'medication', label: 'Medications', icon: Pill }
-                ].map(tab => {
-                  const Icon = tab.icon;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-1.5 px-4 py-2.5 border-b-2 text-xs font-bold uppercase whitespace-nowrap transition-all ${
-                        activeTab === tab.id
-                          ? 'border-teal-600 text-teal-600'
-                          : 'border-transparent text-gray-400 hover:text-gray-700 hover:border-gray-200'
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" />
-                      {tab.label}
-                    </button>
-                  );
-                })}
+                <button
+                  onClick={() => triggerGenerateAdvice(false)}
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 mx-auto"
+                >
+                  <RefreshCw className="h-4 w-4" /> Retry
+                </button>
               </div>
+            )}
 
-              {/* ========================================================
-                  TAB VIEW COMPONENT LAYOUTS
-                  ======================================================== */}
-              <div className="min-h-[250px] animate-fadeIn">
-                
-                {/* 1. PHYSICAL HEALTH TAB */}
-                {activeTab === 'physical' && parsedSections.physical && (
-                  <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-4">
-                    <ReactMarkdown>{parsedSections.physical}</ReactMarkdown>
+            {/* Interrupted warning */}
+            {!streaming && errorState === 'interrupted' && reportText && (
+              <div className="p-4 border-l-4 border-amber-500 bg-amber-50/30 rounded-r-xl flex items-start justify-between">
+                <div className="flex gap-2">
+                  <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-xs font-bold text-amber-800 uppercase tracking-wider">Incomplete Generation</p>
+                    <p className="text-xs text-gray-700 mt-0.5 leading-normal">
+                      This report may be incomplete — tap Regenerate for a fresh analysis.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setErrorState(null)}
+                  className="text-amber-500 hover:text-amber-700 shrink-0 font-bold text-[10px] uppercase border border-amber-200 px-2 py-0.5 rounded hover:bg-amber-100/30"
+                >
+                  Dismiss
+                </button>
+              </div>
+            )}
+
+            {/* ── COMPLETED REPORT ── */}
+            {reportText && (
+              <div className="space-y-5">
+
+                {/* QUOTE BOX: teal left border, light teal bg, italic text */}
+                {parsedSections.overview && (
+                  <div className="border-l-4 border-teal-500 bg-teal-50 rounded-r-xl px-4 py-3">
+                    <p className="text-[13px] text-teal-900 leading-relaxed italic">
+                      "{parsedSections.overview}"
+                    </p>
                   </div>
                 )}
 
-                {/* 2. MENTAL WELLNESS TAB */}
-                {activeTab === 'mental' && parsedSections.mental && (
-                  <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-4">
-                    <ReactMarkdown>{parsedSections.mental}</ReactMarkdown>
-                  </div>
-                )}
+                {/* TABS: underline style, icon + text, scrollable */}
+                <div className="flex overflow-x-auto scrollbar-none border-b border-gray-200 gap-0">
+                  {[
+                    { id: 'physical', label: 'Physical', icon: Activity },
+                    { id: 'mental', label: 'Mental', icon: Smile },
+                    { id: 'nutrition', label: 'Nutrition', icon: Brain },
+                    { id: 'lifestyle', label: 'Lifestyle', icon: TrendingUp },
+                    { id: 'medication', label: 'Preventive', icon: Pill }
+                  ].map(tab => {
+                    const Icon = tab.icon;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-1.5 px-4 py-2.5 border-b-2 text-[13px] font-medium whitespace-nowrap transition-colors -mb-px ${
+                          activeTab === tab.id
+                            ? 'border-teal-600 text-teal-600'
+                            : 'border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-300'
+                        }`}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        {tab.label}
+                      </button>
+                    );
+                  })}
+                </div>
 
-                {/* 3. NUTRITION GUIDE TAB (Custom design layout) */}
-                {activeTab === 'nutrition' && parsedSections.nutrition && (
-                  <div className="space-y-5">
-                    {nutritionLayout.eatMore.length > 0 || nutritionLayout.avoid.length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        
-                        {/* Eat More cards */}
-                        <div className="space-y-3">
-                          <h4 className="text-xs font-bold text-emerald-650 uppercase tracking-wider flex items-center gap-1">
-                            <span className="h-2 w-2 bg-emerald-500 rounded-full"></span> Foods to eat more of
-                          </h4>
+                {/* TAB CONTENT AREA */}
+                <div className="min-h-[220px]">
+
+                  {/* Generic tab renderer — numbered pill cards */}
+                  {['physical', 'mental', 'nutrition', 'lifestyle', 'medication'].map(tabId => {
+                    const sectionText = parsedSections[tabId];
+                    if (activeTab !== tabId || !sectionText) return null;
+
+                    // Parse into icon+title row and bullet list items
+                    const lines = sectionText.split('\n');
+                    const titleLine = (lines[0] || '').replace(/^##\s*/, '').trim();
+                    const introLines = [];
+                    const bulletItems = [];
+                    let seenBullet = false;
+                    lines.slice(1).forEach(line => {
+                      const cleaned = line.replace(/^[-*•]\s*/, '').trim();
+                      if (!cleaned) return;
+                      if (line.trim().startsWith('-') || line.trim().startsWith('*') || line.trim().startsWith('•')) {
+                        seenBullet = true;
+                        bulletItems.push(cleaned);
+                      } else if (!seenBullet) {
+                        introLines.push(cleaned);
+                      }
+                    });
+                    const intro = introLines.join(' ');
+
+                    const tabMeta = {
+                      physical: { icon: Activity, color: 'text-blue-600' },
+                      mental: { icon: Smile, color: 'text-purple-600' },
+                      nutrition: { icon: Brain, color: 'text-teal-600' },
+                      lifestyle: { icon: TrendingUp, color: 'text-green-600' },
+                      medication: { icon: Pill, color: 'text-orange-600' },
+                    };
+                    const meta = tabMeta[tabId];
+                    const TabIcon = meta.icon;
+
+                    return (
+                      <div key={tabId} className="space-y-4">
+                        {/* Section title with icon box */}
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-8 w-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                            <TabIcon className={`h-4 w-4 ${meta.color}`} />
+                          </div>
+                          <h4 className="text-[15px] font-bold text-gray-900">{titleLine}</h4>
+                        </div>
+
+                        {/* Intro paragraph */}
+                        {intro && (
+                          <p className="text-[14px] text-gray-600 leading-[1.8]">{intro}</p>
+                        )}
+
+                        {/* Numbered pill cards */}
+                        {bulletItems.length > 0 ? (
                           <div className="space-y-2">
-                            {nutritionLayout.eatMore.map((item, idx) => (
-                              <div key={idx} className="p-3 border-l-[3px] border-emerald-500 bg-white border border-gray-150 rounded-r-lg shadow-2xs">
-                                <span className="font-bold text-xs text-gray-900 block">{item.food}</span>
-                                <span className="text-xs text-gray-500 block mt-0.5 leading-normal">{item.reason}</span>
+                            {bulletItems.map((item, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-start gap-3 px-4 py-[14px] bg-[#F0FAF7] border border-[#9FE1CB] rounded-[10px]"
+                              >
+                                <span className="h-6 w-6 rounded-full bg-[#0F6E56] text-white text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                  {idx + 1}
+                                </span>
+                                <span className="text-[13px] text-[#1a1a1a] leading-relaxed">{item}</span>
                               </div>
                             ))}
                           </div>
-                        </div>
-
-                        {/* Reduce/Avoid cards */}
-                        <div className="space-y-3">
-                          <h4 className="text-xs font-bold text-red-600 uppercase tracking-wider flex items-center gap-1">
-                            <span className="h-2 w-2 bg-red-500 rounded-full"></span> Foods to reduce or avoid
-                          </h4>
-                          <div className="space-y-2">
-                            {nutritionLayout.avoid.map((item, idx) => (
-                              <div key={idx} className="p-3 border-l-[3px] border-red-500 bg-white border border-gray-150 rounded-r-lg shadow-2xs">
-                                <span className="font-bold text-xs text-gray-900 block">{item.food}</span>
-                                <span className="text-xs text-gray-500 block mt-0.5 leading-normal">{item.reason}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                      </div>
-                    ) : (
-                      // Fallback if parsing didn't match the format
-                      <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed">
-                        <ReactMarkdown>{parsedSections.nutrition}</ReactMarkdown>
-                      </div>
-                    )}
-
-                    {/* Meal Timing Tip Info Banner */}
-                    {nutritionLayout.mealTiming && (
-                      <div className="p-4 bg-amber-50/40 border border-amber-100 rounded-xl flex gap-3">
-                        <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-                        <div>
-                          <span className="font-bold text-xs text-amber-800 uppercase tracking-wider block">Meal Timing Tip</span>
-                          <span className="text-xs text-gray-800 block mt-1 leading-relaxed">{nutritionLayout.mealTiming}</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* 4. LIFESTYLE & HABITS TAB (Custom design layout) */}
-                {activeTab === 'lifestyle' && parsedSections.lifestyle && (
-                  <div className="space-y-5">
-                    {lifestyleLayout.build.length > 0 || lifestyleLayout.reduce.length > 0 ? (
-                      <div className="space-y-4">
-                        {/* Build Checklist */}
-                        {lifestyleLayout.build.length > 0 && (
-                          <div className="space-y-2.5">
-                            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Build These Habits</h4>
-                            <div className="divide-y divide-gray-50 border border-gray-100 rounded-xl overflow-hidden bg-white shadow-2xs">
-                              {lifestyleLayout.build.map((habit, idx) => (
-                                <div key={idx} className="p-3 flex items-start gap-3">
-                                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
-                                  <span className="text-xs text-gray-750 leading-relaxed font-semibold">{habit}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Reduce checklist */}
-                        {lifestyleLayout.reduce.length > 0 && (
-                          <div className="space-y-2.5 pt-1">
-                            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Habits to Reduce</h4>
-                            <div className="divide-y divide-gray-50 border border-gray-100 rounded-xl overflow-hidden bg-white shadow-2xs">
-                              {lifestyleLayout.reduce.map((habit, idx) => (
-                                <div key={idx} className="p-3 flex items-start gap-3">
-                                  <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-                                  <span className="text-xs text-gray-750 leading-relaxed font-semibold">{habit}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Highlight Focus Card */}
-                        {lifestyleLayout.focus && (
-                          <div className="p-5 bg-teal-600 rounded-xl text-white shadow-md relative overflow-hidden">
-                            <Brain className="absolute right-4 bottom-2 h-20 w-20 text-teal-500 opacity-20" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-teal-100 block">This Week's One Focus</span>
-                            <h4 className="text-sm font-bold mt-2 leading-relaxed max-w-md">{lifestyleLayout.focus}</h4>
+                        ) : (
+                          // Fallback: if no bullets, render raw markdown
+                          <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed">
+                            <ReactMarkdown>{sectionText}</ReactMarkdown>
                           </div>
                         )}
                       </div>
-                    ) : (
-                      <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed">
-                        <ReactMarkdown>{parsedSections.lifestyle}</ReactMarkdown>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* 5. MEDICATION REMINDER TAB */}
-                {activeTab === 'medication' && parsedSections.medication && (
-                  <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-4">
-                    <ReactMarkdown>{parsedSections.medication}</ReactMarkdown>
-                  </div>
-                )}
-
-              </div>
-
-              {/* Keep Going encouraging bottom block */}
-              {parsedSections.keepGoing && (
-                <div className="p-4 bg-emerald-50/10 border border-emerald-50 rounded-xl border-dashed">
-                  <p className="text-xs text-emerald-800 font-semibold leading-relaxed">
-                    🌟 {parsedSections.keepGoing}
-                  </p>
+                    );
+                  })}
                 </div>
-              )}
 
-              {/* ========================================================
-                  RISK INDICATOR ROW (Always visible after generation)
-                  ======================================================== */}
-              <div className="border-t pt-5">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2.5">
-                  AI Clinical Flag Summaries (Calculated)
-                </span>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  
-                  {/* Physical Risk */}
-                  <div className="p-3 bg-gray-50 border rounded-lg flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-gray-500 uppercase">Physical Risk</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wider ${
-                      riskBadges.physical === 'high' 
-                        ? 'bg-red-50 text-red-700 border-red-200 animate-pulse'
+                {/* MOTIVATION / KEEP GOING BOX — amber bg */}
+                {parsedSections.keepGoing && (
+                  <div className="flex items-start gap-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl">
+                    <span className="text-amber-500 text-base shrink-0">✦</span>
+                    <p className="text-[13px] text-amber-800 leading-relaxed">
+                      {parsedSections.keepGoing}
+                    </p>
+                  </div>
+                )}
+
+                {/* CLINICAL FLAGS — 3 equal colour-coded cards */}
+                <div className="border-t border-gray-100 pt-4">
+                  <div className="grid grid-cols-3 gap-3">
+                    {/* Physical Risk */}
+                    <div className={`rounded-xl p-4 ${
+                      riskBadges.physical === 'high'
+                        ? 'bg-red-50'
                         : riskBadges.physical === 'moderate'
-                          ? 'bg-amber-50 text-amber-700 border-amber-250'
-                          : 'bg-green-50 text-green-700 border-green-200'
+                          ? 'bg-orange-50'
+                          : 'bg-green-50'
                     }`}>
-                      {riskBadges.physical}
-                    </span>
-                  </div>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${
+                        riskBadges.physical === 'high'
+                          ? 'text-red-600'
+                          : riskBadges.physical === 'moderate'
+                            ? 'text-orange-600'
+                            : 'text-green-600'
+                      }`}>Physical Risk</p>
+                      <p className={`text-[15px] font-semibold ${
+                        riskBadges.physical === 'high'
+                          ? 'text-red-700'
+                          : riskBadges.physical === 'moderate'
+                            ? 'text-orange-700'
+                            : 'text-green-700'
+                      }`}>
+                        {riskBadges.physical === 'high' ? 'High' : riskBadges.physical === 'moderate' ? 'Moderate' : 'Low'}
+                      </p>
+                    </div>
 
-                  {/* Mental Risk */}
-                  <div className="p-3 bg-gray-50 border rounded-lg flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-gray-500 uppercase">Mental Wellness</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wider ${
+                    {/* Mental Wellness */}
+                    <div className={`rounded-xl p-4 ${
                       riskBadges.mental === 'concern'
-                        ? 'bg-red-50 text-red-700 border-red-200'
+                        ? 'bg-red-50'
                         : riskBadges.mental === 'watch'
-                          ? 'bg-amber-50 text-amber-700 border-amber-250'
-                          : 'bg-green-50 text-green-700 border-green-200'
+                          ? 'bg-amber-50'
+                          : 'bg-green-50'
                     }`}>
-                      {riskBadges.mental === 'concern' ? 'High Concern' : riskBadges.mental}
-                    </span>
-                  </div>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${
+                        riskBadges.mental === 'concern'
+                          ? 'text-red-600'
+                          : riskBadges.mental === 'watch'
+                            ? 'text-amber-600'
+                            : 'text-green-600'
+                      }`}>Mental Wellness</p>
+                      <p className={`text-[15px] font-semibold ${
+                        riskBadges.mental === 'concern'
+                          ? 'text-red-700'
+                          : riskBadges.mental === 'watch'
+                            ? 'text-amber-700'
+                            : 'text-green-700'
+                      }`}>
+                        {riskBadges.mental === 'concern' ? 'Concern' : riskBadges.mental === 'watch' ? 'Watch' : 'Stable'}
+                      </p>
+                    </div>
 
-                  {/* Nutrition Alert */}
-                  <div className="p-3 bg-gray-50 border rounded-lg flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-gray-500 uppercase">Nutrition Alert</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wider ${
+                    {/* Nutrition Alert */}
+                    <div className={`rounded-xl p-4 ${
                       riskBadges.nutrition === 'review'
-                        ? 'bg-red-50 text-red-700 border-red-200'
+                        ? 'bg-red-50'
                         : riskBadges.nutrition === 'some'
-                          ? 'bg-amber-50 text-amber-700 border-amber-250'
-                          : 'bg-green-50 text-green-700 border-green-200'
+                          ? 'bg-yellow-50'
+                          : 'bg-green-50'
                     }`}>
-                      {riskBadges.nutrition === 'review' ? 'Review Needed' : riskBadges.nutrition === 'some' ? 'Some' : 'None'}
-                    </span>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${
+                        riskBadges.nutrition === 'review'
+                          ? 'text-red-600'
+                          : riskBadges.nutrition === 'some'
+                            ? 'text-yellow-600'
+                            : 'text-green-600'
+                      }`}>Nutrition Alert</p>
+                      <p className={`text-[15px] font-semibold ${
+                        riskBadges.nutrition === 'review'
+                          ? 'text-red-700'
+                          : riskBadges.nutrition === 'some'
+                            ? 'text-yellow-700'
+                            : 'text-green-700'
+                      }`}>
+                        {riskBadges.nutrition === 'review' ? 'Review Needed' : riskBadges.nutrition === 'some' ? 'Some concern' : 'None'}
+                      </p>
+                    </div>
                   </div>
-
                 </div>
-              </div>
 
-              {/* Action Buttons (Bottom row) */}
-              <div className="border-t pt-5 flex flex-col sm:flex-row gap-3">
+                {/* ACTION BUTTONS — two equal 48px buttons side by side */}
+                <div className="grid grid-cols-2 gap-3 border-t border-gray-100 pt-4">
+                  <button
+                    onClick={downloadPDFReport}
+                    className="flex items-center justify-center gap-2 h-12 bg-[#0F6E56] hover:bg-[#0C5A4C] text-white font-semibold text-[14px] rounded-[10px] transition-colors"
+                  >
+                    <Download className="h-4 w-4" /> Download PDF report
+                  </button>
+                  <button
+                    onClick={() => setShowShareModal(true)}
+                    className="flex items-center justify-center gap-2 h-12 bg-white hover:bg-[#F0FAF7] text-[#0F6E56] font-semibold text-[14px] rounded-[10px] border-[1.5px] border-[#0F6E56] transition-colors"
+                  >
+                    <Share2 className="h-4 w-4" /> Share with doctor
+                  </button>
+                </div>
+
+              </div>
+            )}
+
+            {/* INITIAL STATE: NO REPORT YET */}
+            {!reportText && !streaming && errorState !== 'insufficient_data' && errorState !== 'api_failure' && (
+              <div className="py-12 flex flex-col items-center justify-center gap-4 text-center max-w-sm mx-auto">
+                <Brain className="h-12 w-12 text-teal-100 bg-teal-50 rounded-full p-2.5 shrink-0" />
+                <div>
+                  <p className="font-bold text-sm text-gray-700">No report generated this week</p>
+                  <p className="text-xs text-gray-400 mt-1 leading-normal">
+                    Ready to check your 7-day health trends? Hit the button below to stream a complete summary.
+                  </p>
+                </div>
                 <button
-                  onClick={downloadPDFReport}
-                  className="flex-1 inline-flex items-center justify-center gap-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-colors"
+                  onClick={() => triggerGenerateAdvice(false)}
+                  className="w-full px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-colors shadow-sm"
                 >
-                  <Download className="h-4.5 w-4.5" /> Download My Report PDF
-                </button>
-                <button
-                  onClick={() => setShowShareModal(true)}
-                  className="flex-1 inline-flex items-center justify-center gap-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold text-xs px-4 py-2.5 rounded-lg shadow-xs transition-colors"
-                >
-                  <Share2 className="h-4.5 w-4.5" /> Share with My Doctor
+                  Generate Weekly Advice
                 </button>
               </div>
+            )}
 
-            </div>
-          )}
-
-          {/* INITIAL STATE: NO REPORT YET */}
-          {!reportText && !streaming && errorState !== 'insufficient_data' && (
-            <div className="py-12 flex flex-col items-center justify-center gap-4 text-center max-w-sm mx-auto">
-              <Brain className="h-12 w-12 text-teal-100 bg-teal-50 rounded-full p-2.5 shrink-0" />
-              <div>
-                <p className="font-bold text-sm text-gray-700">No report generated this week</p>
-                <p className="text-xs text-gray-400 mt-1 leading-normal">
-                  Ready to check your 7-day health trends? Hit the button below to stream a complete summary.
-                </p>
-              </div>
-              <button
-                onClick={() => triggerGenerateAdvice(false)}
-                className="w-full px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-colors shadow-sm"
-              >
-                Generate Weekly Advice
-              </button>
-            </div>
-          )}
-
+          </div>{/* end body */}
         </div>
 
       </div>

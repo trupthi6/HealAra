@@ -1,111 +1,100 @@
 import React, { useContext } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import {
-  LayoutDashboard, Heart, Activity, Pill, Calendar,
-  FileText, Target, MessageCircle, Settings, Headphones,
-  LogOut
-} from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-
-const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard',      to: '/dashboard' },
-  { icon: Heart,           label: 'Health Overview', to: '/trends'    },
-  { icon: Activity,        label: 'Metrics',         to: '/alerts'    },
-  { icon: Pill,            label: 'Medications',     to: '/medications'},
-  { icon: Calendar,        label: 'Appointments',    to: '#'          },
-  { icon: FileText,        label: 'Reports',         to: '#'          },
-  { icon: Target,          label: 'Goals',           to: '#'          },
-  { icon: MessageCircle,   label: 'Messages',        to: '#'          },
-  { icon: Settings,        label: 'Settings',        to: '/settings'  },
-];
+import {
+  LayoutDashboard,
+  Activity,
+  TrendingUp,
+  Pill,
+  AlertTriangle,
+  LogOut,
+  Brain,
+  User
+} from 'lucide-react';
 
 export default function Sidebar() {
-  const { logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { user, logout } = useContext(AuthContext);
+
+  if (!user) return null;
+
+  // Define links in required order
+  const links = [
+    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/log', label: 'Log Vitals', icon: Activity },
+    { to: '/trends', label: 'Trends', icon: TrendingUp },
+    { to: '/medications', label: 'Medications', icon: Pill },
+    { to: '/alerts', label: 'Alerts', icon: AlertTriangle },
+    { to: '/advisor', label: 'AI Advisor', icon: Brain },
+    { to: '/settings', label: 'Settings', icon: User }
+  ];
+
+  // Helper for initials
+  const initials = user.name
+    ? user.name
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+    : 'U';
 
   return (
-    <>
-      {/* Desktop Sidebar */}
-      <aside
-        className="hidden md:flex flex-col fixed top-[56px] left-0 z-40 bg-white border-r border-slate-200 overflow-hidden"
-        style={{ width: 200, height: 'calc(100vh - 56px)' }}
-      >
-        {/* Nav items */}
-        <nav className="flex-1 pt-3 overflow-y-auto scrollbar-none">
-          {navItems.map(({ icon: Icon, label, to }) => (
+    <aside className="flex flex-col w-[260px] min-w-[260px] max-w-[260px] h-screen bg-white border-r border-[#e5e7eb] overflow-hidden fixed left-0 top-0">
+      {/* SECTION 1 – Top Logo */}
+      <div className="flex flex-col items-center border-b border-[#e5e7eb] p-5 max-h-[108px]">
+        <div className="flex items-center space-x-2.5">
+          {/* Static simple H logo */}
+          <svg width="42" height="42" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-[42px] w-[42px]">
+            <circle cx="20" cy="20" r="20" fill="#0F6E56" />
+            <text x="50%" y="55%" textAnchor="middle" fill="white" fontSize="20" fontFamily="Arial" fontWeight="bold">H</text>
+          </svg>
+          <span className="text-[22px] font-bold text-[#1a1a1a]">HealAra</span>
+        </div>
+        <p className="text-[11px] text-gray-500 mt-1.5 tracking-wide">MIND · BODY · NUTRITION · AI</p>
+      </div>
+
+      {/* SECTION 2 – Menu Items */}
+      <nav className="flex-1 flex flex-col px-3 py-3 space-y-1 overflow-y-auto">
+        {links.map(link => {
+          const Icon = link.icon;
+          return (
             <NavLink
-              key={label}
-              to={to}
+              key={link.to}
+              to={link.to}
               className={({ isActive }) =>
-                `flex items-center gap-[10px] mx-2 my-0.5 px-4 rounded-lg transition-all duration-150 cursor-pointer select-none ${
+                `flex items-center gap-3 h-[50px] text-[15px] px-3 rounded-[8px] ${
                   isActive
-                    ? 'bg-teal-50 text-teal-600'
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                    ? 'bg-[#E6F4F1] text-[#0F6E56] border-l-[3px] border-[#0F6E56] font-semibold'
+                    : 'text-[#6B7280] hover:bg-[#F0FAF7] hover:text-[#0F6E56]'
                 }`
               }
-              style={{ height: 42, fontSize: 14, fontWeight: 500 }}
-              onClick={e => { if (to === '#') e.preventDefault(); }}
             >
-              {({ isActive }) => (
-                <>
-                  <Icon
-                    size={16}
-                    className={isActive ? 'text-teal-600' : 'text-slate-400'}
-                  />
-                  <span>{label}</span>
-                </>
-              )}
+              <Icon className="h-[22px] w-[22px]" />
+              {link.label}
             </NavLink>
-          ))}
-        </nav>
-
-        {/* Bottom section */}
-        <div className="mt-auto p-3">
-          {/* Need Help card */}
-          <div className="bg-slate-50 border border-slate-200 rounded-[10px] p-3">
-            <div className="flex items-center gap-2 mb-0.5">
-              <Headphones size={16} className="text-teal-600 shrink-0" />
-              <span className="text-[13px] font-semibold text-slate-900">Need Help?</span>
-            </div>
-            <p className="text-[11px] text-slate-400 leading-tight pl-6">Talk to our support team</p>
-          </div>
-          <button className="w-full mt-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg py-2 text-[13px] font-medium transition-colors">
-            Contact Support
-          </button>
-
-          {/* Logout */}
-          <button
-            onClick={() => { logout(); navigate('/login'); }}
-            className="flex items-center gap-2 w-full mt-3 px-4 py-2.5 text-slate-400 hover:text-red-500 text-sm transition-colors rounded-lg hover:bg-red-50"
-          >
-            <LogOut size={16} />
-            <span>Logout</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Mobile Bottom Tab Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 flex">
-        {navItems.slice(0, 5).map(({ icon: Icon, label, to }) => (
-          <NavLink
-            key={label}
-            to={to}
-            className={({ isActive }) =>
-              `flex-1 flex flex-col items-center justify-center py-2 gap-0.5 text-[10px] font-medium transition-colors ${
-                isActive ? 'text-teal-600' : 'text-slate-400'
-              }`
-            }
-            onClick={e => { if (to === '#') e.preventDefault(); }}
-          >
-            {({ isActive }) => (
-              <>
-                <Icon size={20} className={isActive ? 'text-teal-600' : 'text-slate-400'} />
-                <span>{label}</span>
-              </>
-            )}
-          </NavLink>
-        ))}
+          );
+        })}
       </nav>
-    </>
+
+      {/* SECTION 3 – Bottom User Profile */}
+      <div className="border-t border-[#e5e7eb] p-4 flex flex-col items-start">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-[#0F6E56] flex items-center justify-center text-white font-bold text-[15px] shrink-0">
+            {initials}
+          </div>
+          <div className="flex flex-col overflow-hidden">
+            <h4 className="text-[14px] font-bold text-[#1a1a1a] truncate">{user.name}</h4>
+            <p className="text-[12px] text-gray-500 truncate capitalize mt-0.5">{user.role}</p>
+          </div>
+        </div>
+        <button
+          onClick={logout}
+          className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-gray-50 rounded-lg text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
+        >
+          <LogOut className="h-4 w-4" />
+          Logout
+        </button>
+      </div>
+    </aside>
   );
 }

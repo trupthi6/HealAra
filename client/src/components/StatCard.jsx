@@ -27,17 +27,17 @@ export default function StatCard({ title, value, unit, label, icon: Icon, color 
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow duration-200">
+    <div className="card">
       <div className="flex justify-between items-start">
         <div>
           <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{title}</span>
-          <div className="mt-2 flex items-baseline gap-1">
-            <span className="text-3xl font-bold text-gray-900 tracking-tight">{value !== null && value !== undefined ? value : '--'}</span>
-            {unit && <span className="text-sm font-medium text-gray-400">{unit}</span>}
+          <div className="mt-2.5 flex items-baseline gap-1">
+            <span className="text-[36px] leading-none font-bold text-gray-900 tracking-tight">{value !== null && value !== undefined ? value : '--'}</span>
+            {unit && <span className="text-[14px] font-medium text-gray-500">{unit}</span>}
           </div>
         </div>
-        <div className={`p-2.5 rounded-xl ${currentTheme.bg} ${currentTheme.text}`}>
-          <Icon className="h-6 w-6" />
+        <div className={`p-3 rounded-xl ${currentTheme.bg} ${currentTheme.text}`}>
+          <Icon className="h-7 w-7" />
         </div>
       </div>
       {label && (

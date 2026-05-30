@@ -1,6 +1,6 @@
-# Walkthrough — VitalTrack Implementation
+# Walkthrough — HealAra Implementation
 
-We have successfully built and verified the **VitalTrack** Community Health Tracker web application. This document details the features implemented, the system architecture, and how to verify the flows.
+We have successfully built and verified the **HealAra** Community Health Tracker web application. This document details the features implemented, the system architecture, and how to verify the flows.
 
 ---
 
@@ -95,8 +95,8 @@ Execute the seeder to reset data and add the default administrator:
 npm run seed
 ```
 This adds:
-- **Admin account:** `admin@vitaltrack.com` / `Admin@123`
-- **Doctor account:** `doctor@vitaltrack.com` / `Doctor@123`
+- **Admin account:** `admin@healara.com` / `Admin@123`
+- **Doctor account:** `doctor@healara.com` / `Doctor@123`
 - **Patient accounts:** Rahul Verma and Aisha Patel (`Patient@123`).
 
 ### 2. Run the Unified Server
@@ -106,7 +106,7 @@ npm start
 Open **`http://localhost:5000`** in your browser.
 
 ### 3. Admin CRUD Verification Flow
-- **Log in** as `admin@vitaltrack.com` / `Admin@123`.
+- **Log in** as `admin@healara.com` / `Admin@123`.
 - **Navigation:** You will be automatically redirected to `/admin` and see the stats cards.
 - **Search & Filter:** Go to the Users tab, search "Rahul" in the search bar, and verify he appears.
 - **Create User:** Click "Add Record" on the Users tab. In the drawer, fill in a name, email, role (`patient`), add conditions (press Enter after typing), configure custom thresholds, and click "Create Entry".
@@ -116,14 +116,14 @@ Open **`http://localhost:5000`** in your browser.
 - **Verify Cascade Deletes:** Go to the Users tab, search for the test patient you created, and click the Delete icon. Accept the browser confirmation. Verify that all of their health logs, medications, and alerts are successfully removed from the database collections.
 
 ### 4. AI Advisor Patient Verification Flow
-- **Log in** as a patient (e.g., `patient1@vitaltrack.com` / `Patient@123`).
+- **Log in** as a patient (e.g., `patient1@healara.com` / `Patient@123`).
 - **Set Preferences:** Go to Settings (user icon) and select dietary preferences (e.g. Vegetarian, Vegan, low sodium). Click "Save Preferences".
 - **AI Report Generation:** Click the AI Advisor tab. If you have logged at least 3 logs, click "Generate AI advice". Watch the streaming SSE response complete.
 - **Tab Layouts:** Explore the 5 tabs: Physical Health (vitals analysis, risk warning with doctor disclaimer, and 5 action steps), Mental Wellness (lowest mood day correlation, mood activities, counsellor referral if low mood), Nutrition Guide (emerald cards for "Foods to eat", red cards for "Foods to avoid" respecting dietary preferences, meal timing tip), Lifestyle (checklist, focus card), and Medications (active prescriptions list, missed alert flag).
 - **Report Sharing:** Click "Share with My Doctor" and select Dr. Priya Sharma from the connections modal.
 
 ### 5. Doctor Portal & Annotations Verification Flow
-- **Log in** as a doctor (`doctor@vitaltrack.com` / `Doctor@123`).
+- **Log in** as a doctor (`doctor@healara.com` / `Doctor@123`).
 - **Select Patient:** Select Rahul Verma from the shared patient list. Vitals & Logs tab will render his average indicators and logs list.
 - **AI Brief Workspace:** Click the "AI Doctor Brief" tab to view the clinical brief. Verify the color-coded Urgency indicator matches the status (`URGENT` / `SCHEDULED` / `NO IMMEDIATE ACTION`).
 - **Interactable Checklist:** Verify the parsed checklist cards with checkbox controls for nutrition/lifestyle items.
@@ -136,7 +136,7 @@ Open **`http://localhost:5000`** in your browser.
 - **Advisor Note:** Go to the AI Advisor tab. Verify that the doctor's annotation ("Reduce carbohydrate intake before sleep") is highlighted inside a notification card at the top.
 
 ### 7. Doctor Trends & Graphs Verification Flow
-- **Log in** as a doctor (`doctor@vitaltrack.com` / `Doctor@123`).
+- **Log in** as a doctor (`doctor@healara.com` / `Doctor@123`).
 - **Select Patient:** Select Rahul Verma from the shared patient list.
 - **Open Trends & Graphs Tab:** Click the **Trends & Graphs** tab in the main panel.
 - **Verify Charts:** Confirm that interactive line charts (rendered using Recharts) display historical trend lines for:
@@ -146,7 +146,7 @@ Open **`http://localhost:5000`** in your browser.
   - **Weight**
   - **Mood** (from 1 to 10)
 - **Select Date Ranges:** Toggle between the "1 Week", "1 Month", and "3 Months" filters to verify that aggregated statistics (Average, Minimum, Maximum) dynamically re-calculate and display correct metrics and units.
-- **Cross-Verify Patient View:** Log back in as the patient (e.g. `patient1@vitaltrack.com`) and navigate to the **Trends** page. Verify that the same layout (`PatientTrendsView`) renders the patient's own trends perfectly.
+- **Cross-Verify Patient View:** Log back in as the patient (e.g. `patient1@healara.com`) and navigate to the **Trends** page. Verify that the same layout (`PatientTrendsView`) renders the patient's own trends perfectly.
 
 ### 8. Splash Screen & Branding Verification Flow
 - **App Load Splash Screen:** Open the web app at `http://localhost:5000/`.

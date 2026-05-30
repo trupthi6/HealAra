@@ -139,12 +139,12 @@ export default function PatientTrendsView({ patientId, thresholds }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-6xl w-full mx-auto py-4">
       {/* Top Header Block */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 leading-tight">Patient Analytics Trends</h2>
-          <p className="text-sm text-gray-500 mt-1">Visualize and analyze health parameters over time.</p>
+          <h2 className="text-[28px] font-bold text-gray-900 tracking-tight leading-none">Patient Analytics Trends</h2>
+          <p className="text-[14px] text-gray-500 mt-2 font-medium">Visualize and analyze health parameters over time.</p>
         </div>
 
         {/* Period Selector Buttons */}
@@ -153,7 +153,7 @@ export default function PatientTrendsView({ patientId, thresholds }) {
             <button
               key={p.id}
               onClick={() => setPeriod(p.id)}
-              className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-premium ${
                 period === p.id
                   ? 'bg-teal-600 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
@@ -166,16 +166,16 @@ export default function PatientTrendsView({ patientId, thresholds }) {
       </div>
 
       {/* Tabs Menu */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-gray-250">
         <nav className="flex space-x-6">
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`py-3.5 px-1 border-b-2 font-bold text-xs uppercase tracking-wider transition-all ${
+              className={`py-3.5 px-1 border-b-2 font-bold text-xs uppercase tracking-wider transition-premium ${
                 activeTab === tab.id
                   ? 'border-teal-600 text-teal-600'
-                  : 'border-transparent text-gray-400 hover:text-gray-600'
+                  : 'border-transparent text-gray-400 hover:text-gray-650'
               }`}
             >
               {tab.label}
@@ -193,14 +193,14 @@ export default function PatientTrendsView({ patientId, thresholds }) {
       />
 
       {/* Aggregates Summary Row */}
-      <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
-        <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4">Period Summary Statistics</h3>
+      <div className="bg-surface-l1 border border-gray-100 rounded-xl p-6 shadow-sm transition-premium hover:-translate-y-[1px] hover:shadow-md">
+        <h3 className="text-[13px] font-bold text-gray-800 uppercase tracking-wider mb-5">Period Summary Statistics</h3>
         
         {loading ? (
           <div className="grid grid-cols-3 gap-4 animate-shimmer h-12">
-            <div className="bg-gray-50 rounded"></div>
-            <div className="bg-gray-50 rounded"></div>
-            <div className="bg-gray-50 rounded"></div>
+            <div className="bg-gray-50/50 rounded"></div>
+            <div className="bg-gray-50/50 rounded"></div>
+            <div className="bg-gray-50/50 rounded"></div>
           </div>
         ) : stats.avg === null ? (
           <p className="text-center text-xs text-gray-400 font-semibold py-2">No stats available for this selection.</p>
@@ -208,7 +208,7 @@ export default function PatientTrendsView({ patientId, thresholds }) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
             {/* Average */}
             <div className="pt-4 sm:pt-0 first:pt-0 sm:first:pl-0 sm:pl-6 text-center sm:text-left">
-              <span className="text-[10px] text-gray-450 font-bold uppercase tracking-wider">Average Reading</span>
+              <span className="text-[11px] text-gray-450 font-bold uppercase tracking-wider">Average Reading</span>
               <div className="mt-1 flex items-baseline justify-center sm:justify-start gap-1">
                 <span className="text-2xl font-bold text-gray-900">{stats.avg}</span>
                 <span className="text-xs font-semibold text-gray-450">{getUnit()}</span>
@@ -217,7 +217,7 @@ export default function PatientTrendsView({ patientId, thresholds }) {
 
             {/* Min */}
             <div className="pt-4 sm:pt-0 sm:pl-6 text-center sm:text-left">
-              <span className="text-[10px] text-gray-450 font-bold uppercase tracking-wider">Minimum Recorded</span>
+              <span className="text-[11px] text-gray-450 font-bold uppercase tracking-wider">Minimum Recorded</span>
               <div className="mt-1 flex items-baseline justify-center sm:justify-start gap-1">
                 <span className="text-2xl font-bold text-gray-900">{stats.min}</span>
                 <span className="text-xs font-semibold text-gray-450">{getUnit()}</span>
@@ -226,7 +226,7 @@ export default function PatientTrendsView({ patientId, thresholds }) {
 
             {/* Max */}
             <div className="pt-4 sm:pt-0 sm:pl-6 text-center sm:text-left">
-              <span className="text-[10px] text-gray-450 font-bold uppercase tracking-wider">Maximum Recorded</span>
+              <span className="text-[11px] text-gray-450 font-bold uppercase tracking-wider">Maximum Recorded</span>
               <div className="mt-1 flex items-baseline justify-center sm:justify-start gap-1">
                 <span className="text-2xl font-bold text-red-650">{stats.max}</span>
                 <span className="text-xs font-semibold text-gray-450">{getUnit()}</span>

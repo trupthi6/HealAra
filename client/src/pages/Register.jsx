@@ -139,17 +139,17 @@ export default function Register() {
 
   /* ── Render ── */
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-gray-50 flex items-center justify-center py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50/30 via-white to-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
 
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-[500px]">
 
         {/* Logo & Title */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center -mt-8 -mb-4">
-            <BrandLogo style={{ transform: 'scale(0.65)', transformOrigin: 'center' }} />
+            <BrandLogo style={{ transform: 'scale(0.7)', transformOrigin: 'center' }} />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <h1 className="text-[28px] font-bold text-gray-900 tracking-tight leading-none">Create Account</h1>
+          <p className="mt-3 text-[14px] text-gray-500 font-medium">
             Join HealAra to start monitoring your health
           </p>
         </div>
@@ -157,15 +157,15 @@ export default function Register() {
         {/* Step Indicator (patient only) */}
         {role === 'patient' && (
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className={`flex items-center gap-2 text-xs font-bold transition-colors ${step >= 1 ? 'text-teal-600' : 'text-gray-400'}`}>
-              <div className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${step >= 1 ? 'bg-teal-600 text-white' : 'bg-gray-200 text-gray-400'}`}>
+            <div className={`flex items-center gap-2 text-[12px] font-bold transition-premium ${step >= 1 ? 'text-teal-600' : 'text-gray-400'}`}>
+              <div className={`h-7 w-7 rounded-full flex items-center justify-center text-[12px] font-bold transition-premium ${step >= 1 ? 'bg-teal-600 text-white' : 'bg-gray-200 text-gray-400'}`}>
                 {step > 1 ? <CheckCircle2 className="h-4 w-4" /> : '1'}
               </div>
               Basic Info
             </div>
-            <div className={`h-px w-12 transition-colors ${step >= 2 ? 'bg-teal-400' : 'bg-gray-200'}`} />
-            <div className={`flex items-center gap-2 text-xs font-bold transition-colors ${step >= 2 ? 'text-teal-600' : 'text-gray-400'}`}>
-              <div className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${step >= 2 ? 'bg-teal-600 text-white' : 'bg-gray-200 text-gray-400'}`}>
+            <div className={`h-px w-12 transition-premium ${step >= 2 ? 'bg-teal-400' : 'bg-gray-200'}`} />
+            <div className={`flex items-center gap-2 text-[12px] font-bold transition-premium ${step >= 2 ? 'text-teal-600' : 'text-gray-400'}`}>
+              <div className={`h-7 w-7 rounded-full flex items-center justify-center text-[12px] font-bold transition-premium ${step >= 2 ? 'bg-teal-600 text-white' : 'bg-gray-200 text-gray-400'}`}>
                 2
               </div>
               Health Profile
@@ -174,24 +174,24 @@ export default function Register() {
         )}
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <div className="bg-surface-l1 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-gray-100 overflow-hidden">
 
           {/* ── STEP 1: Basic Info ── */}
           {step === 1 && (
-            <div className="p-8 space-y-5">
+            <div className="p-8 space-y-6">
 
               {/* Role Selection */}
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">
+                <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-3">
                   I am registering as a
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setRole('patient')}
-                    className={`py-4 px-4 border-2 rounded-xl flex flex-col items-center gap-2 text-sm font-semibold transition-all ${
+                    className={`py-4 px-4 border-2 rounded-xl flex flex-col items-center gap-2 text-[14px] font-bold transition-premium ${
                       role === 'patient'
-                        ? 'border-teal-600 bg-teal-50 text-teal-700 shadow-sm'
+                        ? 'border-teal-600 bg-teal-50/50 text-teal-700 shadow-sm'
                         : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
@@ -201,9 +201,9 @@ export default function Register() {
                   <button
                     type="button"
                     onClick={() => setRole('doctor')}
-                    className={`py-4 px-4 border-2 rounded-xl flex flex-col items-center gap-2 text-sm font-semibold transition-all ${
+                    className={`py-4 px-4 border-2 rounded-xl flex flex-col items-center gap-2 text-[14px] font-bold transition-premium ${
                       role === 'doctor'
-                        ? 'border-teal-600 bg-teal-50 text-teal-700 shadow-sm'
+                        ? 'border-teal-600 bg-teal-50/50 text-teal-700 shadow-sm'
                         : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
@@ -215,18 +215,18 @@ export default function Register() {
 
               {/* Full Name */}
               <div>
-                <label htmlFor="name" className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="name" className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-gray-400" />
                   <input
                     id="name"
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-gray-50"
+                    className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-[14px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-premium bg-gray-50/50 focus:bg-white shadow-sm"
                     placeholder="Rahul Verma"
                   />
                 </div>
@@ -234,18 +234,18 @@ export default function Register() {
 
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="email" className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-gray-400" />
                   <input
                     id="email"
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-gray-50"
+                    className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-[14px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-premium bg-gray-50/50 focus:bg-white shadow-sm"
                     placeholder="rahul@example.com"
                   />
                 </div>
@@ -253,18 +253,18 @@ export default function Register() {
 
               {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="password" className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-gray-400" />
                   <input
                     id="password"
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-gray-50"
+                    className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-[14px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-premium bg-gray-50/50 focus:bg-white shadow-sm"
                     placeholder="Minimum 6 characters"
                   />
                 </div>
@@ -275,14 +275,14 @@ export default function Register() {
                 type="button"
                 onClick={handleNext}
                 disabled={loading}
-                className="w-full flex justify-center items-center gap-2 py-3 px-6 bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm rounded-xl transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center items-center gap-2 py-3 px-6 bg-teal-600 hover:bg-teal-700 text-white font-bold text-[14px] rounded-xl transition-premium shadow-[0_4px_12px_rgba(13,148,136,0.15)] disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-[1px]"
               >
                 {loading ? (
                   'Creating Account…'
                 ) : role === 'patient' ? (
-                  <>Next: Health Profile <ArrowRight className="h-4 w-4" /></>
+                  <>Next: Health Profile <ArrowRight className="h-4.5 w-4.5" /></>
                 ) : (
-                  <>Create Account <ArrowRight className="h-4 w-4" /></>
+                  <>Create Account <ArrowRight className="h-4.5 w-4.5" /></>
                 )}
               </button>
             </div>
@@ -294,33 +294,33 @@ export default function Register() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"
+                className="text-[12px] font-bold text-teal-600 hover:text-teal-700 flex items-center gap-1 transition-premium"
               >
                 ← Back to Basic Info
               </button>
 
               {/* Date of Birth */}
               <div>
-                <label htmlFor="dob" className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="dob" className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2">
                   Date of Birth <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-gray-400" />
                   <input
                     id="dob"
                     type="date"
                     required
                     value={dob}
                     onChange={(e) => setDob(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-gray-50"
+                    className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-[14px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-premium bg-gray-50/50 focus:bg-white shadow-sm"
                   />
                 </div>
               </div>
 
               {/* Chronic Conditions */}
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                  Chronic Conditions <span className="text-gray-400 font-normal">(optional)</span>
+                <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2">
+                  Chronic Conditions <span className="text-gray-400 font-normal normal-case">(optional)</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {CONDITIONS.map((c) => {
@@ -330,10 +330,10 @@ export default function Register() {
                         key={c}
                         type="button"
                         onClick={() => handleConditionToggle(c)}
-                        className={`px-3 py-1.5 border rounded-lg text-xs font-semibold capitalize transition-all ${
+                        className={`px-3.5 py-2 border rounded-lg text-[12px] font-bold capitalize transition-premium ${
                           active
                             ? 'bg-teal-600 border-teal-600 text-white shadow-sm'
-                            : 'bg-white border-gray-200 text-gray-600 hover:border-teal-300 hover:bg-teal-50'
+                            : 'bg-white border-gray-200 text-gray-600 hover:border-teal-300 hover:bg-teal-50/50'
                         }`}
                       >
                         {active && '✓ '}{c}
@@ -343,30 +343,30 @@ export default function Register() {
                 </div>
               </div>
 
-              {/* Doctor Selection — CRITICAL SECTION */}
+              {/* Doctor Selection ── */}
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                  Assign to Doctor(s) <span className="text-gray-400 font-normal">(optional — doctors you select can view your health data)</span>
+                <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2">
+                  Assign to Doctor(s) <span className="text-gray-400 font-normal normal-case">(optional — doctor gets view access)</span>
                 </label>
 
                 {fetchingDoctors ? (
-                  <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 text-center text-xs text-gray-400">
+                  <div className="bg-gray-50/50 rounded-xl border border-gray-200 p-4 text-center text-xs text-gray-400">
                     Loading available doctors…
                   </div>
                 ) : doctors.length === 0 ? (
-                  <div className="bg-amber-50 rounded-xl border border-amber-200 p-4 text-center">
+                  <div className="bg-amber-50/50 rounded-xl border border-amber-200 p-4 text-center">
                     <Stethoscope className="h-6 w-6 text-amber-400 mx-auto mb-1" />
-                    <p className="text-xs text-amber-700 font-medium">No doctors registered yet.</p>
-                    <p className="text-[11px] text-amber-600 mt-0.5">You can assign a doctor later from your Settings page.</p>
+                    <p className="text-xs text-amber-700 font-semibold">No doctors registered yet.</p>
+                    <p className="text-[10px] text-amber-600 mt-0.5">You can assign a doctor later from Settings.</p>
                   </div>
                 ) : (
-                  <div className="bg-gray-50 rounded-xl border border-gray-200 divide-y divide-gray-100 max-h-48 overflow-y-auto">
+                  <div className="bg-gray-50/50 rounded-xl border border-gray-200 divide-y divide-gray-100 max-h-48 overflow-y-auto custom-scrollbar pr-1">
                     {doctors.map((doc) => {
                       const selected = selectedDoctors.includes(doc._id);
                       return (
                         <label
                           key={doc._id}
-                          className={`flex items-center gap-3 p-3.5 cursor-pointer hover:bg-teal-50 transition-colors ${selected ? 'bg-teal-50' : ''}`}
+                          className={`flex items-center gap-3 p-3.5 cursor-pointer hover:bg-teal-50/30 transition-colors ${selected ? 'bg-teal-50/30' : ''}`}
                         >
                           <div className={`h-5 w-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
                             selected ? 'bg-teal-600 border-teal-600' : 'border-gray-300 bg-white'
@@ -382,12 +382,12 @@ export default function Register() {
                               {doc.name.charAt(0).toUpperCase()}
                             </div>
                             <div className="min-w-0">
-                              <p className="text-xs font-semibold text-gray-800 truncate">{doc.name}</p>
+                              <p className="text-[12px] font-bold text-gray-800 truncate tracking-tight">{doc.name}</p>
                               <p className="text-[10px] text-gray-500 truncate">{doc.email}</p>
                             </div>
                           </div>
                           {selected && (
-                            <span className="text-[10px] bg-teal-600 text-white px-2 py-0.5 rounded-full font-bold shrink-0">
+                            <span className="text-[10px] bg-teal-600 text-white px-2 py-0.5 rounded-full font-bold shrink-0 shadow-sm">
                               Selected
                             </span>
                           )}
@@ -398,17 +398,17 @@ export default function Register() {
                 )}
 
                 {selectedDoctors.length > 0 && (
-                  <p className="text-[11px] text-teal-600 font-medium mt-2 flex items-center gap-1">
+                  <p className="text-[11px] text-teal-600 font-bold mt-2 flex items-center gap-1">
                     <CheckCircle2 className="h-3.5 w-3.5" />
-                    {selectedDoctors.length} doctor{selectedDoctors.length > 1 ? 's' : ''} selected — they will be able to view your health logs and AI reports.
+                    {selectedDoctors.length} doctor{selectedDoctors.length > 1 ? 's' : ''} assigned
                   </p>
                 )}
               </div>
 
               {/* Alert Thresholds */}
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                  <Settings className="h-3.5 w-3.5 text-teal-500" />
+                <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                  <Settings className="h-4 w-4 text-teal-500" />
                   Alert Threshold Limits
                 </label>
                 <div className="grid grid-cols-3 gap-3">
@@ -418,7 +418,7 @@ export default function Register() {
                     { label: 'Heart Rate (bpm)', value: heartRateMax, onChange: setHeartRateMax },
                   ].map((field) => (
                     <div key={field.label}>
-                      <label className="block text-[10px] text-gray-500 font-bold uppercase mb-1">{field.label}</label>
+                      <label className="block text-[9px] text-gray-500 font-bold uppercase mb-1">{field.label}</label>
                       <input
                         type="number"
                         value={field.value}
@@ -435,18 +435,18 @@ export default function Register() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="w-full flex justify-center items-center gap-2 py-3 px-6 bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm rounded-xl transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center items-center gap-2 py-3 px-6 bg-teal-600 hover:bg-teal-700 text-white font-bold text-[14px] rounded-xl transition-premium shadow-[0_4px_12px_rgba(13,148,136,0.15)] disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-[1px]"
               >
                 {loading ? 'Creating Account…' : (
-                  <>Create Account <ArrowRight className="h-4 w-4" /></>
+                  <>Create Account <ArrowRight className="h-4.5 w-4.5" /></>
                 )}
               </button>
             </div>
           )}
 
           {/* Footer */}
-          <div className="border-t border-gray-100 px-8 py-5 bg-gray-50 text-center">
-            <p className="text-sm text-gray-500">
+          <div className="border-t border-gray-150 px-8 py-5 bg-gray-50/50 text-center">
+            <p className="text-[14px] text-gray-500 font-medium">
               Already have an account?{' '}
               <Link to="/login" className="font-semibold text-teal-600 hover:text-teal-700">
                 Log in here

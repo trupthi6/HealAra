@@ -22,133 +22,131 @@ body {
 /* ORBIT STAGE */
 .stage {
   position: relative;
-  width: 210px;
-  height: 210px;
+  width: 300px;
+  height: 300px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .stage svg {
   overflow: visible;
-  width: 210px;
-  height: 210px;
+  width: 300px;
+  height: 300px;
 }
 
-/* Pure line arcs - no filled circles, no dark rings */
+/* Pure line arcs */
 .arc {
   fill: none;
   stroke-linecap: round;
 }
 
-/* Three elliptical paths at different tilts */
-.path-b {
+.path-inner {
   stroke: #0D9488;
-  stroke-width: 1.5;
-  opacity: .22;
+  stroke-width: 1.25;
+  opacity: 0.12;
 }
 
-.path-m {
+.path-middle {
   stroke: #0D9488;
-  stroke-width: 1.5;
-  opacity: .22;
+  stroke-width: 1.25;
+  opacity: 0.12;
 }
 
-.path-n {
+.path-outer {
   stroke: #0D9488;
-  stroke-width: 1.5;
-  opacity: .22;
+  stroke-width: 1.25;
+  opacity: 0.12;
 }
 
-/* Moving dash - the "comet" on each path */
-.comet-b {
+/* Comet Trail */
+.comet-trail {
   fill: none;
-  stroke: #0D9488;
-  stroke-width: 2;
-  stroke-dasharray: 28 400;
+  stroke-width: 2.2;
   stroke-linecap: round;
-  animation: cometB 5s linear infinite;
+  opacity: 0.75;
 }
 
-.comet-m {
-  fill: none;
-  stroke: #2DD4BF;
-  stroke-width: 2;
-  stroke-dasharray: 22 400;
-  stroke-linecap: round;
-  animation: cometM 8s linear infinite;
+/* Planets */
+.planet {
+  fill: #2DD4BF;
+  filter: url(#glow-soft);
 }
 
-.comet-n {
-  fill: none;
-  stroke: #5EEAD4;
-  stroke-width: 2;
-  stroke-dasharray: 18 400;
-  stroke-linecap: round;
-  animation: cometN 11s linear infinite reverse;
-}
-
-@keyframes cometB {
-  from { stroke-dashoffset: 428; }
-  to   { stroke-dashoffset: 0; }
-}
-
-@keyframes cometM {
-  from { stroke-dashoffset: 428; }
-  to   { stroke-dashoffset: 0; }
-}
-
-@keyframes cometN {
-  from { stroke-dashoffset: 428; }
-  to   { stroke-dashoffset: 0; }
-}
-
-/* Planet dots - pure solid circles, no glow rings */
-.planet-wrap {
-  transform-origin: 105px 105px;
-}
-
-.pb { animation: spinB  5s linear infinite; }
-.pm { animation: spinM  8s linear infinite; }
-.pn { animation: spinN 11s linear infinite reverse; }
-
-@keyframes spinB {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-@keyframes spinM {
-  from { transform: rotate(120deg); }
-  to   { transform: rotate(480deg); }
-}
-
-@keyframes spinN {
-  from { transform: rotate(240deg); }
-  to   { transform: rotate(600deg); }
-}
-
-.planet-dot {
-  transition: r .2s;
-}
-
-/* Core - minimal, just a clean circle with letter */
-.core {
+.planet-inner {
   fill: #0D9488;
 }
 
+.planet-middle {
+  fill: #2DD4BF;
+}
+
+.planet-outer {
+  fill: #5EEAD4;
+}
+
+/* Core breathing ring */
 .core-ring {
   fill: none;
-  stroke: #0D9488;
-  stroke-width: 1;
+  stroke: #2DD4BF;
+  stroke-width: 1.5;
   opacity: 0;
-  transform-origin: 105px 105px;
-  animation: breathe 3s ease-in-out infinite;
+  transform-origin: 150px 150px;
+  animation: breathe 3.5s ease-in-out infinite;
+  filter: url(#glow-soft);
 }
 
 @keyframes breathe {
-  0%   { opacity: .5; transform: scale(1); }
-  50%  { opacity: 0;  transform: scale(1.55); }
-  100% { opacity: .5; transform: scale(1); }
+  0%   { opacity: 0.35; transform: scale(1); }
+  50%  { opacity: 0;  transform: scale(1.35); }
+  100% { opacity: 0.35; transform: scale(1); }
 }
 
+/* Core solid H icon */
+.core {
+  fill: url(#core-grad);
+  filter: url(#glow-heavy);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.core-h {
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  fill: #ffffff;
+  text-anchor: middle;
+  dominant-baseline: central;
+  letter-spacing: normal;
+}
+
+/* Spins */
+.inner-spin {
+  transform-origin: 150px 150px;
+  animation: spinClockwise 8s linear infinite;
+}
+
+.middle-spin {
+  transform-origin: 150px 150px;
+  animation: spinCounterClockwise 12s linear infinite;
+}
+
+.outer-spin {
+  transform-origin: 150px 150px;
+  animation: spinClockwise 16s linear infinite;
+}
+
+@keyframes spinClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinCounterClockwise {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+/* Typography & Wordmark */
 .wm {
   display: flex;
   flex-direction: column;
@@ -163,7 +161,7 @@ body {
 }
 
 .wm-heal {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
   font-size: 56px;
   font-weight: 200;
   color: #0f172a;
@@ -172,7 +170,7 @@ body {
 }
 
 .wm-ara {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
   font-size: 56px;
   font-weight: 600;
   color: #0D9488;
@@ -181,33 +179,82 @@ body {
 }
 
 .wm-tag {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   color: #94a3b8;
   letter-spacing: 4px;
   margin-top: 16px;
+  text-transform: uppercase;
 }
 
-/* Vertical rule removed for stacked layout */
+/* Vertical rule removed */
 .rule {
   display: none;
 }
 
-/* Label text on planets */
+/* Label text on planets removed */
 .plabel {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 9.5px;
-  fill: #64748b;
-  text-anchor: middle;
-  font-weight: 500;
+  display: none;
 }
 
 .plett {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 8px;
-  fill: #fff;
+  display: none;
+}
+
+/* Cinematic Animations */
+.cinematic-stage {
+  opacity: 0;
+  transform: scale(0.85);
+  animation: cinematicFadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cinematic-logo {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: cinematicFadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.7s forwards;
+}
+
+.cinematic-tagline {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: cinematicFadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1.5s forwards;
+}
+
+@keyframes cinematicFadeIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes cinematicFadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Orbit labels - Upright Option */
+.orbit-label {
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  font-size: 8.5px;
   font-weight: 700;
-  text-anchor: middle;
-  dominant-baseline: middle;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.85;
+}
+
+.label-body {
+  fill: #06B6D4;
+}
+
+.label-nutrition {
+  fill: #0D9488;
+}
+
+.label-mind {
+  fill: #84CC16;
 }

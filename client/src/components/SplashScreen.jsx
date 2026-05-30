@@ -4,15 +4,15 @@ export default function SplashScreen({ onComplete }) {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    // Stage 1: Wait for 2 seconds (logo animation completes and holds)
+    // Stage 1: Wait for 3.5 seconds (cinematic animations complete and hold)
     const fadeTimer = setTimeout(() => {
       setFadeOut(true);
-    }, 2000);
+    }, 3500);
 
-    // Stage 2: After fade-out transition completes (400ms), unmount
+    // Stage 2: After fade-out transition completes (500ms), unmount
     const unmountTimer = setTimeout(() => {
       if (onComplete) onComplete();
-    }, 2400);
+    }, 4000);
 
     return () => {
       clearTimeout(fadeTimer);
@@ -31,12 +31,13 @@ export default function SplashScreen({ onComplete }) {
           width: 100vw;
           height: 100vh;
           background-color: #ffffff;
+          background-image: radial-gradient(circle at center, #ffffff 60%, #f4fbfb 100%);
           z-index: 9999;
           display: flex;
           align-items: center;
           justify-content: center;
           opacity: 1;
-          transition: opacity 400ms ease-out;
+          transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .splash-fade-out {
@@ -44,227 +45,15 @@ export default function SplashScreen({ onComplete }) {
           pointer-events: none;
         }
 
-        /* Swiggy-like Entry Animation */
         .splash-logo-wrapper {
-          transform: translateY(20px);
-          opacity: 0;
-          animation: logoFadeUp 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes logoFadeUp {
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-
-        /* ORBIT LOGO BRANDING STYLES */
-        .scene {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 52px;
-          padding: 52px 40px;
-          background: #ffffff;
-          border-radius: 24px;
-          flex-wrap: wrap;
-          min-height: 300px;
-        }
-
-        /* ORBIT STAGE */
-        .stage {
-          position: relative;
-          width: 210px;
-          height: 210px;
-          flex-shrink: 0;
-        }
-
-        .stage svg {
-          overflow: visible;
-          width: 210px;
-          height: 210px;
-        }
-
-        /* Pure line arcs - no filled circles, no dark rings */
-        .arc {
-          fill: none;
-          stroke-linecap: round;
-        }
-
-        /* Three elliptical paths at different tilts */
-        .path-b {
-          stroke: #0D9488;
-          stroke-width: 1.5;
-          opacity: .22;
-        }
-
-        .path-m {
-          stroke: #0D9488;
-          stroke-width: 1.5;
-          opacity: .22;
-        }
-
-        .path-n {
-          stroke: #0D9488;
-          stroke-width: 1.5;
-          opacity: .22;
-        }
-
-        /* Moving dash - the "comet" on each path */
-        .comet-b {
-          fill: none;
-          stroke: #0D9488;
-          stroke-width: 2;
-          stroke-dasharray: 28 400;
-          stroke-linecap: round;
-          animation: cometB 5s linear infinite;
-        }
-
-        .comet-m {
-          fill: none;
-          stroke: #2DD4BF;
-          stroke-width: 2;
-          stroke-dasharray: 22 400;
-          stroke-linecap: round;
-          animation: cometM 8s linear infinite;
-        }
-
-        .comet-n {
-          fill: none;
-          stroke: #5EEAD4;
-          stroke-width: 2;
-          stroke-dasharray: 18 400;
-          stroke-linecap: round;
-          animation: cometN 11s linear infinite reverse;
-        }
-
-        @keyframes cometB {
-          from { stroke-dashoffset: 428; }
-          to   { stroke-dashoffset: 0; }
-        }
-
-        @keyframes cometM {
-          from { stroke-dashoffset: 428; }
-          to   { stroke-dashoffset: 0; }
-        }
-
-        @keyframes cometN {
-          from { stroke-dashoffset: 428; }
-          to   { stroke-dashoffset: 0; }
-        }
-
-        /* Planet dots - pure solid circles, no glow rings */
-        .planet-wrap {
-          transform-origin: 105px 105px;
-        }
-
-        .pb { animation: spinB  5s linear infinite; }
-        .pm { animation: spinM  8s linear infinite; }
-        .pn { animation: spinN 11s linear infinite reverse; }
-
-        @keyframes spinB {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
-
-        @keyframes spinM {
-          from { transform: rotate(120deg); }
-          to   { transform: rotate(480deg); }
-        }
-
-        @keyframes spinN {
-          from { transform: rotate(240deg); }
-          to   { transform: rotate(600deg); }
-        }
-
-        .planet-dot {
-          transition: r .2s;
-        }
-
-        /* Core - minimal, just a clean circle with letter */
-        .core {
-          fill: #0D9488;
-        }
-
-        .core-ring {
-          fill: none;
-          stroke: #0D9488;
-          stroke-width: 1;
-          opacity: 0;
-          transform-origin: 105px 105px;
-          animation: breathe 3s ease-in-out infinite;
-        }
-
-        @keyframes breathe {
-          0%   { opacity: .5; transform: scale(1); }
-          50%  { opacity: 0;  transform: scale(1.55); }
-          100% { opacity: .5; transform: scale(1); }
-        }
-
-        /* WORDMARK */
-        .wm {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        }
-
-        .wm-heal {
-          font-family: 'Helvetica Neue', Arial, sans-serif;
-          font-size: 72px;
-          font-weight: 100;
-          color: #0f172a;
-          letter-spacing: -4px;
-          line-height: 1;
-        }
-
-        .wm-ara {
-          font-family: 'Helvetica Neue', Arial, sans-serif;
-          font-size: 72px;
-          font-weight: 100;
-          color: #0D9488;
-          letter-spacing: -4px;
-          line-height: 1.05;
-        }
-
-        .wm-tag {
-          font-family: 'Helvetica Neue', Arial, sans-serif;
-          font-size: 10px;
-          font-weight: 500;
-          color: #94a3b8;
-          letter-spacing: 4px;
-          margin-top: 16px;
-        }
-
-        /* Vertical rule */
-        .rule {
-          width: 1px;
-          height: 150px;
-          background: #e2e8f0;
-          align-self: center;
-          flex-shrink: 0;
-        }
-
-        /* Label text on planets */
-        .plabel {
-          font-family: 'Helvetica Neue', Arial, sans-serif;
-          font-size: 9.5px;
-          fill: #64748b;
-          text-anchor: middle;
-          font-weight: 500;
-        }
-
-        .plett {
-          font-family: 'Helvetica Neue', Arial, sans-serif;
-          font-size: 8px;
-          fill: #fff;
-          font-weight: 700;
-          text-anchor: middle;
-          dominant-baseline: middle;
         }
       `}</style>
 
       <div className="splash-logo-wrapper">
-        <BrandLogo style={{ transform: 'scale(1)', transformOrigin: 'center' }} />
+        <BrandLogo cinematic={true} style={{ transform: 'scale(1.35)', transformOrigin: 'center' }} />
       </div>
     </div>
   );

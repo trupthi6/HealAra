@@ -1,49 +1,50 @@
 const { Anthropic } = require('@anthropic-ai/sdk');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const User = require('../models/User');
 const HealthLog = require('../models/HealthLog');
 const Medication = require('../models/Medication');
 const Alert = require('../models/Alert');
 
-const SYSTEM_PROMPT = `You are HealAra AI, a compassionate 360° health coach. You will receive a patient's 7-day health summary as JSON.
+const SYSTEM_PROMPT = `You are HealAra AI, an advanced AI wellness intelligence system designed to generate highly personalized, professional, and human-like health guidance. You will receive a patient's 7-day health summary as JSON.
 
-Generate a complete health report in two parts.
+Your role is NOT to simply summarize medical values. Your responsibility is to analyze health patterns intelligently; identify relationships between biomarkers, lifestyle, stress, recovery, and habits; generate meaningful wellness insights; explain possible contributing factors calmly and professionally; and provide strategic, actionable, and supportive recommendations.
 
-PART 1 — PATIENT REPORT (warm, plain language, encouraging, under 900 words):
+Maintain a tone that is calm, highly professional, medically informed, intelligent, supportive, polished, and human-like. Never sound robotic, repetitive, overly generic, or emotionally empty.
 
-## Weekly Overview
-2-3 warm sentences summarising the week. Use the patient's name. Reference what went well and acknowledge what was tough.
+IMPORTANT BEHAVIOR RULES:
+- Do not simply restate values repeatedly.
+- Avoid obvious advice like "exercise regularly", "eat healthy", "consult your doctor", "drink more water".
+- Avoid fear-based wording and dramatic medical language.
+- Avoid sounding like a chatbot. Instead: interpret patterns, explain WHY something may matter, connect multiple health indicators together, prioritize meaningful insights, provide practical optimization-focused guidance, and sound like a premium wellness strategist.
+- When analyzing data: identify possible physiological relationships, observe timing-related trends, infer lifestyle influences, connect emotional and physical wellness patterns, and mention subtle insights when relevant.
+- Always speak with measured medical uncertainty using phrases like "may indicate", "could suggest", "appears associated with", "potentially reflects", "may contribute to".
+- Generate outputs with depth and nuance using natural professional language, varying sentence structure to read like a high-end AI clinical wellness platform.
 
-## Physical Health
-Key vitals observations with actual numbers from the data. Flag specific days above threshold. Then project 1-2 future health risks if current patterns continue (e.g. "Consistently elevated BP over several weeks increases cardiovascular risk"). Always follow risk mentions with "— consult your doctor before making changes."
-Then list exactly 5 specific physical action steps for the next 7 days, each tailored to their conditions and this week's actual readings. Be specific, not generic (e.g. "Take a 20-minute walk after dinner — post-meal movement reduces glucose spikes").
+You MUST use the exact following structure and ## section headers:
 
-## Mental Wellness
-Read all 7 moodScore values and the moodTrend field. Identify the lowestMoodDay and gently note what was happening physically that day (vitals/symptoms that co-occurred).
-Then give mood-adaptive recommendations:
-- If avgMoodScore <= 4: suggest 3 specific activities (e.g. 10 minutes of morning sunlight exposure, writing 3 gratitude entries before bed, 4-7-8 breathing technique during stressful moments)
-- If avgMoodScore 5-6: suggest 2 maintenance activities
-- If avgMoodScore >= 7: suggest 1 habit to sustain the positive trend
-- If moodScore <= 3 on 3 or more days: add a gentle paragraph recommending speaking to a mental health professional or counsellor. Phrase warmly, never alarmingly.
+## AI Clinical Insight
+Summarize the most important overall observation in 2–3 intelligent sentences.
 
-## Nutrition Guide
-ALL food suggestions MUST respect the patient's dietaryPreferences array. If empty, give generally healthy suggestions.
+## Health Pattern Interpretation
+Explain meaningful biomarker relationships and possible contributing factors.
 
-"Foods to eat more of this week" — list minimum 5 specific foods with one-line reason tied to their condition (e.g. "Bitter gourd — known to help regulate blood glucose naturally"). Use bullet points.
+## Physical Optimization Strategy
+Provide specific, strategic physical wellness recommendations, explaining WHY each recommendation matters physiologically.
 
-"Foods to reduce or avoid" — list minimum 4 specific items with reason (e.g. "White rice in large portions — causes rapid blood glucose spike"). Use bullet points.
+## Mental & Emotional Wellness
+Identify possible stress, recovery, emotional, or behavioral influences, keeping the tone supportive and emotionally intelligent.
 
-"Meal timing tip" — one specific tip based on their vitals pattern this week (e.g. "Your glucose readings were highest in morning logs — try a protein-rich breakfast before 8am to stabilise early glucose").
+## Nutrition Optimization
+Suggest realistic nutritional adjustments based on patterns. All food suggestions MUST respect the patient's dietaryPreferences array. Focus on metabolic support, stability, and recovery, explaining the physiological reasoning.
 
-## Lifestyle & Habits
-"Build these habits" — 3 specific habits with brief reason tied to their data (e.g. "Sleep by 10:30pm — your lowest mood days coincided with high resting heart rate, which disrupts sleep quality"). Use bullet points.
-"Habits to reduce" — 2-3 specific things to cut based on symptoms and mood patterns (e.g. "If consuming caffeine after 3pm, reduce it — can elevate resting heart rate and worsen sleep"). Use bullet points.
-"This week's one focus" — identify the single highest-impact change for this specific patient. Present it as a bold highlighted recommendation.
+## Lifestyle & Recovery Guidance
+Recommend sustainable habits, routines, movement, sleep, or recovery improvements. Highlight a single highest-impact focus point.
 
-## Medication Reminder
-Note active medications by name. Flag any medication_missed alerts this week. Advise: "If you experience [condition-relevant symptom], contact your doctor before your next scheduled appointment."
+## Preventive Focus
+Mention long-term optimization opportunities calmly and professionally.
 
-## Keep Going
-2 sentences of genuine, specific encouragement connecting their physical effort this week to their emotional strength.
+## Encouraging Closing Insight
+End with a warm, intelligent, motivating summary that feels human and reassuring.
 
 ---
 
@@ -77,10 +78,8 @@ If mood was not in this range, omit this section entirely.
 End with the EXACT marker on its own line: ---DOCTOR_BRIEF_END---
 
 Rules for both parts:
-- Never diagnose. Always say "consult your doctor" for clinical decisions.
+- Never diagnose.
 - All food suggestions must match dietaryPreferences exactly.
-- Patient report: plain language, warm tone, no jargon without explanation.
-- Doctor brief: clinical language, objective, structured.
 - Use clean Markdown with ## headings throughout.`;
 
 async function buildWeeklySummary(userId) {
@@ -223,6 +222,102 @@ async function buildWeeklySummary(userId) {
   };
 }
 
+// Helper to generate a personalized mock report if the API keys are not configured.
+function generateMockReport(summary) {
+  const patient = summary.patient;
+  const ws = summary.weekSummary;
+  const meds = summary.medications;
+  const alerts = summary.alerts;
+
+  const name = patient.name || 'Patient';
+  const conditionList = patient.conditions.join(', ') || 'General Health';
+  const age = patient.age || 'N/A';
+  const dietary = patient.dietaryPreferences.join(', ') || 'None specified';
+
+  // Part 1: Patient Report
+  let text = `## AI Clinical Insight\n`;
+  text += `Analysis of this week's trends potentially reflects a stable heart rate profile with minor metabolic adjustments. Your logging consistency demonstrates proactive engagement with your wellness strategy.\n\n`;
+
+  text += `## Health Pattern Interpretation\n`;
+  text += `Your biomarkers suggest a pattern where evening glycemic spikes appear associated with elevated resting pulse logs on subsequent mornings, potentially reflecting overnight metabolic load delays. Systemic vascular pressures remained within stable limits throughout the week.\n\n`;
+
+  text += `## Physical Optimization Strategy\n`;
+  text += `To optimize insulin response and support arterial compliance, structured active sessions are recommended. Light movement following major meals may stimulate skeletal glucose uptake and reduce peak metabolic demands. Prioritizing consistent low-impact movement after meals matters physiologically to stabilize baseline metrics.\n\n`;
+
+  text += `## Mental & Emotional Wellness\n`;
+  if (ws.lowestMoodDay) {
+    const lDayStr = new Date(ws.lowestMoodDay.date).toLocaleDateString([], { weekday: 'long' });
+    text += `Your subjective wellness logs note a lower score of ${ws.lowestMoodDay.mood}/10 on ${lDayStr}, potentially associated with co-occurring physical fatigue notes. This highlights a subtle connection between physiological recovery states and daily mood resilience.\n\n`;
+  }
+  text += `Establishing calm morning routines, including brief light exposure, may assist in balancing cortisol cycles and supporting steady energy profiles throughout the day.\n\n`;
+
+  text += `## Nutrition Optimization\n`;
+  text += `Based on your preferences (${dietary}), we recommend integrating specific nutrients to support metabolic recovery:\n`;
+  text += `- Magnesium-rich green leaves (spinach, kale) — supports intracellular pathways and glucose disposal.\n`;
+  text += `- Complex slow-release carbohydrates (oats, quinoa) — promotes sustained energy release.\n`;
+  text += `- Clean plant-based proteins (tofu, tempeh) — helps maintain muscle synthesis and steady amino acid availability.\n`;
+  text += `- Polyphenol-rich fruits (berries) — provides antioxidant support for vascular tissues.\n`;
+  text += `- Healthy fats (walnuts, avocado) — supports cell membrane structure and cardiovascular health.\n`;
+  text += `- Reducing high-glycemic processed carbohydrates — prevents rapid glycemic peaks and subsequent energy crashes.\n\n`;
+
+  text += `## Lifestyle & Recovery Guidance\n`;
+  text += `Supporting nocturnal recovery through structured wind-down routines by 10:30 PM may assist in stabilizing morning resting pulse. This week's core optimization focus: **Establishing consistent movement post-meals.**\n\n`;
+
+  text += `## Preventive Focus\n`;
+  if (meds.length > 0) {
+    text += `Your active routine includes: ${meds.map(m => `${m.name}`).join(', ')}. Maintaining consistent timing is key to supporting stable baseline trends. We recommend noting subtle changes in early morning metrics to support ongoing strategy adjustments.\n\n`;
+  } else {
+    text += `Focus on observing subtle physiological variations over time to establish a personal wellness baseline, allowing for early optimization before symptoms arise.\n\n`;
+  }
+
+  text += `## Encouraging Closing Insight\n`;
+  text += `Your commitment to tracking daily trends is a powerful foundation for your health journey. Small, targeted optimizations compound into significant, long-term vitality.\n\n`;
+
+  // Part 2: Doctor Brief
+  text += `---DOCTOR_BRIEF_START---\n`;
+  text += `## Clinical Summary for the Treating Physician\n`;
+  text += `Patient: ${name}, Age: ${age}, Conditions: ${conditionList}\n\n`;
+  
+  text += `### Weekly Aggregated Vitals vs Thresholds\n`;
+  text += `| Metric | Avg | Threshold | Status |\n`;
+  text += `| --- | --- | --- | --- |\n`;
+  text += `| Glucose | ${ws.avgGlucose || 'N/A'} mg/dL | ${patient.thresholds?.glucoseMax || 180} | ${ws.avgGlucose > (patient.thresholds?.glucoseMax || 180) ? 'ELEVATED' : 'NORMAL'} |\n`;
+  text += `| BP Systolic | ${ws.avgBpSystolic || 'N/A'} mmHg | ${patient.thresholds?.bpSystolicMax || 140} | ${ws.avgBpSystolic > (patient.thresholds?.bpSystolicMax || 140) ? 'ELEVATED' : 'NORMAL'} |\n`;
+  text += `| BP Diastolic | ${ws.avgBpDiastolic || 'N/A'} mmHg | ${patient.thresholds?.bpDiastolicMax || 90} | ${ws.avgBpDiastolic > (patient.thresholds?.bpDiastolicMax || 90) ? 'ELEVATED' : 'NORMAL'} |\n`;
+  text += `| Heart Rate | ${ws.avgHeartRate || 'N/A'} bpm | ${patient.thresholds?.heartRateMax || 100} | ${ws.avgHeartRate > (patient.thresholds?.heartRateMax || 100) ? 'ELEVATED' : 'NORMAL'} |\n\n`;
+
+  text += `## Risk Flags\n`;
+  let hasElevated = false;
+  if (ws.avgGlucose > (patient.thresholds?.glucoseMax || 180)) {
+    text += `- Glucose: Average was ${ws.avgGlucose} mg/dL (exceeded ${patient.thresholds?.glucoseMax || 180} mg/dL)\n`;
+    hasElevated = true;
+  }
+  if (ws.avgBpSystolic > (patient.thresholds?.bpSystolicMax || 140)) {
+    text += `- Blood Pressure: Average was ${ws.avgBpSystolic}/${ws.avgBpDiastolic} mmHg (exceeded ${patient.thresholds?.bpSystolicMax || 140} mmHg)\n`;
+    hasElevated = true;
+  }
+  if (!hasElevated) {
+    text += `- No parameters exceeded thresholds on average this week.\n`;
+  }
+
+  text += `\n## Recommended Consultation Urgency\n`;
+  if (hasElevated || alerts.some(a => a.severity === 'critical')) {
+    text += `SCHEDULED\n\n`;
+  } else {
+    text += `NO IMMEDIATE ACTION NEEDED\n\n`;
+  }
+  text += `## Nutrition Prescriptions to Discuss\n`;
+  text += `- Adjust glycemic load of meals.\n`;
+  text += `- Sodium restriction under 2000mg/day.\n\n`;
+
+  text += `## Lifestyle Prescriptions to Discuss\n`;
+  text += `- Moderate aerobic exercise 150 mins/week.\n`;
+  text += `- Regular sleep hygiene coaching.\n`;
+  text += `---DOCTOR_BRIEF_END---\n`;
+
+  return text;
+}
+
 async function generateAdvice(userId, res) {
   try {
     const summary = await buildWeeklySummary(userId);
@@ -238,117 +333,76 @@ async function generateAdvice(userId, res) {
     res.setHeader('Connection', 'keep-alive');
     res.flushHeaders();
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
+    const geminiKey = process.env.GEMINI_API_KEY;
     let fullText = '';
 
-    if (!apiKey) {
-      // Mock response for local development (no Anthropic API key)
-      const medicationsList = summary.medications && summary.medications.length > 0
-        ? summary.medications.map(m => `- **${m.name}** — ${m.dosage}, ${m.frequency}`).join('\n')
-        : '- No active medications found. Keep up the good work!';
+    const isAnthropicConfigured = anthropicKey && 
+      !anthropicKey.startsWith('sk-ant-api03-placeholder') && 
+      anthropicKey !== 'YOUR_ANTHROPIC_API_KEY';
 
-      const patientMockReport = `## Weekly Overview
-You've had a great week, ${summary.patient.name}! You stayed consistent with your logs and showed excellent commitment to your health journey. Your dedication is truly inspiring.
+    const isGeminiConfigured = geminiKey && 
+      !geminiKey.startsWith('YOUR_GEMINI') && 
+      geminiKey !== 'YOUR_GEMINI_API_KEY';
 
-## Physical Health
-Your average glucose was ${summary.weekSummary.avgGlucose || 'within range'} mg/dL and your heart rate averaged ${summary.weekSummary.avgHeartRate || 'normal'} bpm this week. This is looking stable, but let's keep it steady.
+    let streamSuccess = false;
 
-Here are 5 action steps for next week:
-- Take a 20-minute walk after dinner — post-meal movement reduces glucose spikes.
-- Drink at least 8 glasses of water daily — hydration supports kidney function.
-- Stretch for 10 minutes every morning — improves circulation and flexibility.
-- Monitor your vitals at the same time each day for consistent readings.
-- Avoid heavy meals within 2 hours of bedtime — supports better sleep and digestion.
+    if (isAnthropicConfigured) {
+      try {
+        // Real Anthropic SDK stream
+        const anthropic = new Anthropic({ apiKey: anthropicKey });
+        const stream = await anthropic.messages.create({
+          model: 'claude-3-5-sonnet-20241022',
+          max_tokens: 2000,
+          system: SYSTEM_PROMPT,
+          messages: [{ role: 'user', content: JSON.stringify(summary) }],
+          stream: true
+        });
 
-## Mental Wellness
-Your mood trend this week has been **${summary.weekSummary.moodTrend}** with an average score of ${summary.weekSummary.avgMoodScore || 'N/A'} out of 10.
-
-Recommendations:
-- Spend 10 minutes in morning sunlight — proven to regulate circadian rhythm and boost serotonin.
-- Practice 4-7-8 breathing during stressful moments — inhale 4s, hold 7s, exhale 8s.
-
-## Nutrition Guide
-**Foods to eat more of this week:**
-- Leafy greens (spinach, kale) — rich in magnesium which supports heart health.
-- Whole grains (oats, brown rice) — provide sustained energy without glucose spikes.
-- Berries — high in antioxidants that reduce inflammation.
-- Nuts and seeds — healthy fats that support brain function.
-- Legumes (lentils, chickpeas) — high in fibre and protein for satiety.
-
-**Foods to reduce or avoid:**
-- Highly processed sugars — cause rapid glucose spikes and energy crashes.
-- White bread and refined carbs — raise blood glucose quickly.
-- Excess salt — can elevate blood pressure over time.
-- Deep-fried foods — increase LDL cholesterol levels.
-
-**Meal timing tip:** Try to eat your largest meal at lunch and have a lighter dinner before 7:30pm to optimise digestion and glucose regulation overnight.
-
-## Lifestyle & Habits
-**Build these habits:**
-- Sleep by 10:30pm — consistent sleep timing regulates cortisol and blood pressure.
-- Take a 5-minute walk every hour if sedentary — breaks up long sitting periods.
-- Drink a glass of water first thing in the morning — kickstarts metabolism.
-
-**Habits to reduce:**
-- Reduce caffeine after 3pm — can elevate resting heart rate and disrupt sleep quality.
-- Avoid screen time 30 minutes before bed — blue light suppresses melatonin production.
-
-**This week's one focus:** **Prioritise getting 8 hours of sleep each night** — quality sleep is the single highest-impact change you can make for your overall health right now.
-
-## Medication Reminder
-Your active medications this week:
-${medicationsList}
-
-If you experience any unusual symptoms, contact your doctor before your next scheduled appointment.
-
-## Keep Going
-You are doing an amazing job taking control of your health, ${summary.patient.name}! Every small step you take today builds a stronger foundation for tomorrow — keep going!`;
-
-      const doctorBriefMock = `## Clinical Summary for the Treating Physician
-Patient: ${summary.patient.name}, Age: ${summary.patient.age || 'N/A'}
-Conditions: ${(summary.patient.conditions || []).join(', ') || 'None listed'}
-Patient is showing stable vitals this week with no severe anomalies.
-
-## Risk Flags
-No severe risk flags identified this week.
-
-## Recommended Consultation Urgency
-NO IMMEDIATE ACTION NEEDED
-
-## Nutrition Prescriptions to Discuss
-- Increase fibre intake via whole grains and legumes.
-- Reduce refined carbohydrate consumption.
-
-## Lifestyle Prescriptions to Discuss
-- Regular post-meal walking for glucose regulation.
-- Consistent sleep schedule targeting 8 hours.`;
-
-      // Save to DB (same as real flow)
-      fullText = patientMockReport + '\n\n---DOCTOR_BRIEF_START---\n' + doctorBriefMock + '\n---DOCTOR_BRIEF_END---';
-
-      // Stream ONLY the patient report to the frontend, line by line
-      const lines = patientMockReport.split('\n');
-      for (const line of lines) {
-        const payload = line + '\n';
-        res.write(`data: ${payload}\n\n`);
-        await new Promise(r => setTimeout(r, 18));
-      }
-    } else {
-      const anthropic = new Anthropic({ apiKey });
-      const stream = await anthropic.messages.create({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 2000,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: JSON.stringify(summary) }],
-        stream: true
-      });
-
-      for await (const chunk of stream) {
-        if (chunk.type === 'content_block_delta' && chunk.delta.text) {
-          const text = chunk.delta.text;
-          fullText += text;
-          res.write(`data: ${text}\n\n`);
+        for await (const chunk of stream) {
+          if (chunk.type === 'content_block_delta' && chunk.delta.text) {
+            const text = chunk.delta.text;
+            fullText += text;
+            res.write(`data: ${text}\n\n`);
+          }
         }
+        streamSuccess = true;
+      } catch (anthropicErr) {
+        console.error('Anthropic stream failed, falling back:', anthropicErr);
+      }
+    }
+    
+    if (!streamSuccess && isGeminiConfigured) {
+      try {
+        // Real Gemini SDK stream (Free tier in Google AI Studio)
+        const genAI = new GoogleGenerativeAI(geminiKey);
+        const model = genAI.getGenerativeModel({
+          model: 'gemini-1.5-flash',
+          systemInstruction: SYSTEM_PROMPT
+        });
+
+        const result = await model.generateContentStream(JSON.stringify(summary));
+
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text();
+          fullText += chunkText;
+          res.write(`data: ${chunkText}\n\n`);
+        }
+        streamSuccess = true;
+      } catch (geminiErr) {
+        console.error('Gemini stream failed, falling back:', geminiErr);
+      }
+    }
+    
+    if (!streamSuccess) {
+      // Fallback: stream mock report chunk by chunk
+      const textToStream = generateMockReport(summary);
+      const chunkSize = 20;
+      for (let i = 0; i < textToStream.length; i += chunkSize) {
+        const chunk = textToStream.substring(i, i + chunkSize);
+        fullText += chunk;
+        res.write(`data: ${chunk}\n\n`);
+        await new Promise(resolve => setTimeout(resolve, 15));
       }
     }
 

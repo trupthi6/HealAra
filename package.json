@@ -1,7 +1,7 @@
 {
-  "name": "healara-server",
+  "name": "healara-root",
   "version": "1.0.0",
-  "description": "HealAra backend server",
+  "description": "HealAra - Community Health Intelligence Platform",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {

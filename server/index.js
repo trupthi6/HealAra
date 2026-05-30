@@ -50,24 +50,24 @@ app.get('/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date() });
 });
 
-// Serve static assets from React client build folder
-app.use(express.static(path.resolve(__dirname, '../client/dist')));
-
-// Wildcard fallback to serve index.html for React Router client-side routing
-app.get('*', (req, res) => {
-  if (req.originalUrl.startsWith('/api')) {
-    return res.status(404).json({ success: false, message: 'API endpoint not found' });
-  }
-  res.sendFile(path.resolve(__dirname, '../client/dist', 'index.html'));
-});
+// Serve static assets from React client build folder in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/dist')));
+  app.get('*', (req, res) => {
+    if (req.originalUrl.startsWith('/api')) {
+      return res.status(404).json({ success: false, message: 'API endpoint not found' });
+    }
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  });
+}
 
 // Database Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/healara';
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('MongoDB successfully connected.');
-    // Only listen locally, Vercel Serverless handles the port binding automatically
-    if (process.env.NODE_ENV !== 'production') {
+    // Listen on Railway/Render/local, skip listen only on Vercel serverless
+    if (!process.env.VERCEL) {
       app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
       });
